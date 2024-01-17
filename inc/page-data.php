@@ -29,7 +29,7 @@ $shs_courses = array(
             "Electrical Installation Work", "Electronics", "Fashion And Design", "Auto Mobile Engineering",
             "General Textiles", "Industrial Mechanics", "Mechanical Engineering Craft Practice", "Welding Drawing",
             "Metal Work", "Photography", "Plumbing Craft", "Printing Craft", "Welding And Fabrication", "Wood Work",
-            "Mechanical Drawing"
+            "Mechanical Drawing", "Physics", "Chemistry", "Elective Mathematics"
         )
     ),
 );
