@@ -92,7 +92,7 @@ class UsersController
         die("Invalid file uploaded!");
     }
 
-    public function validateText($input)
+    /*public function validateText($input)
     {
         if (empty($input)) die("Input required!");
 
@@ -101,86 +101,46 @@ class UsersController
 
         if ($validated_input) return $user_input;
         die("Invalid Input!");
-    }
+    }*/
 
     public function validateNumber($input)
     {
-        if (empty($input)) {
-            return array("status" => "error", "message" => "required");
-        }
-
-        $user_input = htmlentities(htmlspecialchars($input));
-        $validated_input = (bool) preg_match('/^[0-9]/', $user_input);
-
-        if ($validated_input) {
-            return array("status" => "success", "message" => $user_input);
-        }
-
+        if (empty($input)) return array("status" => "error", "message" => "required");
+        $user_input = htmlspecialchars($input);
+        $validated_input = (bool) preg_match('/^[0-9]+$/', $user_input);
+        if ($validated_input) return array("status" => "success", "message" => $user_input);
         return array("status" => "error", "message" => "invalid");
     }
 
     public function validateInputTextOnly($input)
     {
-        if (empty($input)) {
-            return array("status" => "error", "message" => "required");
-        }
-
-        $user_input = htmlentities(htmlspecialchars($input));
-        $validated_input = (bool) preg_match('/^[A-Za-z]/', $user_input);
-
-        if ($validated_input) {
-            return array("status" => "success", "message" => $user_input);
-        }
-
+        if (empty($input)) return array("status" => "error", "message" => "required");
+        $user_input = htmlspecialchars($input);
+        $validated_input = (bool) preg_match('/^[A-Za-z]+$/', $user_input);
+        if ($validated_input) return array("status" => "success", "message" => $user_input);
         return array("status" => "error", "message" => "invalid");
     }
 
     public function validateInputTextNumber($input)
     {
-        if (empty($input)) {
-            return array("status" => "error", "message" => "required");
-        }
-
+        if (empty($input)) return array("status" => "error", "message" => "required");
         $user_input = htmlentities(htmlspecialchars($input));
         $validated_input = (bool) preg_match('/^[A-Za-z0-9]/', $user_input);
-
-        if ($validated_input) {
-            return array("status" => "success", "message" => $user_input);
-        }
-
+        if ($validated_input) return array("status" => "success", "message" => $user_input);
         return array("status" => "error", "message" => "invalid");
     }
 
     public function validateYearData($input)
     {
-        if (empty($input) || strtoupper($input) == "YEAR") {
-            return array("status" => "error", "message" => "required");
-        }
-
-        if ($input < 1990 || $input > 2023) {
-            return array("status" => "error", "message" => "invalid");
-        }
-
-        $user_input = htmlentities(htmlspecialchars($input));
-        $validated_input = (bool) preg_match('/^[0-9]/', $user_input);
-
-        if ($validated_input) {
-            return array("status" => "success", "message" => $user_input);
-        }
-
-        return array("status" => "error", "message" => "invalid");
+        if (empty($input) || strtoupper($input) == "YEAR") return array("status" => "error", "message" => "required");
+        if ($input < 1990 || $input > 2023) return array("status" => "error", "message" => "invalid");
+        return $this->validateNumber($input);
     }
 
     public function validateGrade($input)
     {
-        if (empty($input) || strtoupper($input) == "GRADE") {
-            return array("status" => "error", "message" => "required");
-        }
-
-        if (strlen($input) < 1 || strlen($input) > 2) {
-            return array("status" => "error", "message" => "invalid");
-        }
-
+        if (empty($input) || strtoupper($input) == "GRADE") return array("status" => "error", "message" => "required");
+        if (strlen($input) < 1 || strlen($input) > 2) return array("status" => "error", "message" => "invalid");
         $user_input = htmlentities(htmlspecialchars($input));
         return array("status" => "success", "message" => $user_input);
     }
