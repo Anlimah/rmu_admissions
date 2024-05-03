@@ -239,7 +239,7 @@ $courses = $user->fetchCourses();
                     </div>
                     <div id="step-3" class="steps hide">
                         <div class="mb-4" id="course-studied-group">
-                            <label class="form-label" for="course-studied">Course or program of Study <span class="input-required">*</span></label>
+                            <label class="form-label" for="other-course-studied">Course or program of Study <span class="input-required">*</span></label>
                             <div class="other-course-studied">
                                 <input type="text" name="other-course-studied" id="other-course-studied" class="edu-mod-text form-control" placeholder="Enter course studied">
                             </div>
