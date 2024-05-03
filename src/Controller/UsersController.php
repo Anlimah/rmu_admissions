@@ -458,29 +458,6 @@ class UsersController
         return 0;
     }
 
-    /*public function saveCoreSubjectGrades($math, $english, $science, $social)
-    {
-        $sql = "INSERT INTO `core_subjects_grades` (`school_name`, `country`, 
-                `region`, `city`, `cert_type`, `index_number`, `month_started`, `year_started`, 
-                `month_completed`, `year_completed`, `course_of_study`,`app_login`) 
-                VALUES (:m, :e, :i, :s)";
-        $params = array(":m" => $math, ":e" => $english, ":i" => $science, ":s" => $social);
-        return $this->dm->inputData($sql, $params);
-    }
-
-    public function saveElectiveSubjectGrades($ej1, $ejg1, $ej2, $ejg2, $ej3, $ejg3, $ej4, $ejg4)
-    {
-        $sql = "INSERT INTO `elective_subjects_grades` (`school_name`, `country`, 
-                `region`, `city`, `cert_type`, `index_number`, `month_started`, `year_started`, 
-                `month_completed`, `year_completed`, `course_of_study`,`app_login`) 
-                VALUES (:s1, :g1, :s2, :g2, :s3, :g3, :s4, :g4)";
-        $params = array(
-            ":s1" => $ej1, ":g1" => $ejg1, ":s2" => $ej2, ":g2" => $ejg2,
-            ":s3" => $ej3, ":g3" => $ejg3, ":s4" => $ej4, ":g4" => $ejg4
-        );
-        return $this->dm->inputData($sql, $params);
-    }*/
-
     public function saveSubjectAndGrades($subjects = array(), $aca_id)
     {
         if (!empty($subjects)) {
@@ -642,10 +619,10 @@ class UsersController
         $query = "";
         switch ($data) {
             case 'MASTERS':
-                $query = "SELECT * FROM programs WHERE program_code IN ('MSC', 'MA')";
+                $query = "SELECT * FROM programs WHERE code IN ('MSC', 'MA')";
                 break;
             case 'UPGRADE':
-                $query = "SELECT * FROM programs WHERE program_code = 'UPGRADE'";
+                $query = "SELECT * FROM programs WHERE code = 'UPGRADE'";
                 break;
         }
         return $this->dm->getData($query);

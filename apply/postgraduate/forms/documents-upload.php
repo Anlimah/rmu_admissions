@@ -153,7 +153,7 @@ if (!$progName) {
     <?php
 } else {
     $proInfo = $user->fetchAllFromProgramByName($progName);
-    if (strtolower($proInfo[0]["program_code"]) == "msc" || strtolower($proInfo[0]["program_code"]) == "ma") {
+    if (strtolower($proInfo[0]["code"]) == "msc" || strtolower($proInfo[0]["code"]) == "ma") {
 
         $cv = $user->fetchUploadedDocsByType($user_id, 'cv');
         $sop = $user->fetchUploadedDocsByType($user_id, 'sop');
