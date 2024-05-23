@@ -80,6 +80,7 @@ $courses = $user->fetchCourses();
                                 <div class="col-6">
                                     <select class="edu-mod-date-y form-select form-select-sm" name="year-started" id="year-started">
                                         <option value="Year" hidden>Year</option>
+                                        <option value="2024">2024</option>
                                         <option value="2023">2023</option>
                                         <option value="2022">2022</option>
                                         <option value="2021">2021</option>
@@ -141,6 +142,7 @@ $courses = $user->fetchCourses();
                                 <div class="col-6">
                                     <select class="edu-mod-date-y form-select form-select-sm" name="year-completed" id="year-completed">
                                         <option value="Year" hidden>Year</option>
+                                        <option value="2024">2024</option>
                                         <option value="2023">2023</option>
                                         <option value="2022">2022</option>
                                         <option value="2021">2021</option>
@@ -356,6 +358,7 @@ $courses = $user->fetchCourses();
                                 </select>
                                 <select name="edit-year-started" id="edit-year-started" class="transform-text edu-mod-date-y form-select form-select-sm">
                                     <option value="Year" hidden>Year</option>
+                                    <option value="2024">2024</option>
                                     <option value="2023">2023</option>
                                     <option value="2022">2022</option>
                                     <option value="2021">2021</option>
@@ -413,6 +416,7 @@ $courses = $user->fetchCourses();
                                 </select>
                                 <select name="edit-year-completed" id="edit-year-completed" class="transform-text edu-mod-date-y form-select form-select-sm">
                                     <option value="Year" hidden>Year</option>
+                                    <option value="2024">2024</option>
                                     <option value="2023">2023</option>
                                     <option value="2022">2022</option>
                                     <option value="2021">2021</option>
