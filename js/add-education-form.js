@@ -336,7 +336,7 @@ $(document).ready(function () {
             processData: false,
         }).done(function (data) {
             console.log(data);
-            
+
             let step_errors = 0;
             if (!data.success) {
                 let step1, step2, step3, step4 = 0;
@@ -395,7 +395,7 @@ $(document).ready(function () {
 
                 // core
                 if (data.errors.core_sbj_grp1) {
-                    $("#edit-core-sbj1-group").addClass("has-error"); 
+                    $("#edit-core-sbj1-group").addClass("has-error");
                     $("#edit-core-sbj1-group").append('<div class="help-block" style="font-size:14px; color:red">' + data.errors.core_sbj_grp1 + "</div>");
                     step3 = 3;
                 }
@@ -493,7 +493,7 @@ $(document).ready(function () {
 
     //Edit button on each added education item
     $(".edit-edu-btn").click(function (e) {
-        
+
         $.ajax({
             type: "GET",
             url: "../../api/education",
@@ -523,7 +523,7 @@ $(document).ready(function () {
 
             $("#edit-course-studied").val(data["aca"][0]["course_of_study"]);
             $("#edit-other-course-studied").val(data["aca"][0]["other_course_studied"]);
-            
+
             if (data["aca"][0]["awaiting_result"]) {
                 $('input[name="edit-awaiting-result"][value="Yes"]').prop('checked', "checked");
                 $('input[name="edit-awaiting-result"][value="No"]').prop('checked', "");
@@ -551,19 +551,19 @@ $(document).ready(function () {
                 $("#edit-awaiting-result-no").prop("checked", "");*/
 
             } else {
-            
+
                 //Append the grades to the dropdown list
                 $(".subject-grade").html('<option value="Select" hidden>Select</option>');
                 $.each(data["grades"], function (index, value) {
                     $(".subject-grade").append('<option value="' + value.grade + '">' + value.grade + '</option>');
                 });
-    
+
                 //Append the grades to the dropdown list
                 $(".elective-subjects").html('<option value="Select" hidden>Select</option>');
                 $.each(data["elective_subjects"], function (index, value) {
                     $(".elective-subjects").append('<option value="' + value.subject + '">' + value.subject + '</option>');
                 });
-    
+
                 // Set courses values (if cert type in 'WASSCE', 'SSSCE', 'NECO', 'GBCE')
                 if (data["courses"]) {
                     //core subjects
@@ -572,12 +572,12 @@ $(document).ready(function () {
                             $("#edit-core-sbj-grd" + (index + 1) + " option[value='" + data["courses"][index]["grade"] + "']").attr('selected', 'selected');
                             document.querySelector("#edit-core-sbj" + (index + 1)).dataset.type = "subject";
                             document.querySelector("#edit-core-sbj" + (index + 1)).dataset.value = data["courses"][index]["id"];
-                            
+
                             document.querySelector("#edit-core-sbj-grd" + (index + 1)).dataset.type = "grade";
                             document.querySelector("#edit-core-sbj-grd" + (index + 1)).dataset.value = data["courses"][index]["id"];
                         }
                     }
-    
+
                     //elective subjects
                     for (let index = 3; index < 8; index++) {
                         if (data["courses"][index]["type"] == "elective") {
@@ -585,19 +585,19 @@ $(document).ready(function () {
                             $("#edit-elective-sbj-grd" + (index - 3) + " option[value='" + data["courses"][index]["grade"] + "']").attr('selected', 'selected');
                             document.querySelector("#edit-elective-sbj" + (index - 3)).dataset.type = "subject";
                             document.querySelector("#edit-elective-sbj" + (index - 3)).dataset.value = data["courses"][index]["id"];
-                            
+
                             document.querySelector("#edit-elective-sbj-grd" + (index - 3)).dataset.type = "grade";
                             document.querySelector("#edit-elective-sbj-grd" + (index - 3)).dataset.value = data["courses"][index]["id"];
                         }
                     }
-    
+
                 } /*else {
                     $("#edit-awaiting-result-yes").attr("checked", "checked");
                     $("#edit-awaiting-result-no").attr("checked", "");
                     $("#edit-not-waiting").slideUp();
                     //$("#edit-not-waiting").attr("class", "hide");
                 }*/
-                
+
                 $("#edit-course-studied").slideDown();
                 $(".edit-other-course-studied").slideUp();
                 $(".edit-waec-course-content").slideDown();

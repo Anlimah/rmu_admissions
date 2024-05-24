@@ -6,7 +6,11 @@ $_SESSION["currentAccess"] = time();
 
 $diff = $_SESSION["currentAccess"] - $_SESSION["lastAccessed"];
 
-if ($diff >  1800) die(json_encode(array("success" => false, "message" => "Your session expired. Please refresh the page to continue!")));
+if ($diff >  1800) die(json_encode(array(
+    "success" => false,
+    "message" => "Your session expired. Please refresh the page to continue!",
+    "data" => "logout"
+)));
 
 /*
 * Designed and programmed by

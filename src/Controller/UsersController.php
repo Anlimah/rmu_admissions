@@ -133,7 +133,8 @@ class UsersController
     public function validateYearData($input)
     {
         if (empty($input) || strtoupper($input) == "YEAR") return array("status" => "error", "message" => "required");
-        if ($input < 1990 || $input > 2023) return array("status" => "error", "message" => "invalid");
+        $years = array_column($this->fetchYears(), "year");
+        if ($input < min($years) || $input > max($years)) return array("status" => "error", "message" => "invalid");
         return $this->validateNumber($input);
     }
 
@@ -307,6 +308,12 @@ class UsersController
         $params = array(":sn" => $serial_number, ":a" => $aca_back_id);
         $grade_data = $this->dm->getData($sql2, $params);
         return $grade_data;
+    }
+
+    public function fetchYears()
+    {
+        $sql = "SELECT `year` FROM `years` ORDER BY `year` DESC";
+        return $this->dm->getData($sql);
     }
 
     public function fetchGrades($cert_type)
