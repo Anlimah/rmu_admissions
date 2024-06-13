@@ -34,14 +34,12 @@ if (!isset($_SESSION["_start"])) {
                         <div class="app-step row">
                             <div class="col-1 text-center">1</div>
                             <p class="col-11">
-                                Purchase an e-voucher
+                                Purchase an e-voucher using Mobile Money, Card (Visa & Master), or Cash.
                                 <a href="https://forms.rmuictonline.com">
+                                    <span style="color: red; font-weight:bolder"> Click here to buy</span>
                                     <span style="color:#003262; font-weight:bolder"> online </span>
-                                </a> using
-                                <span style="color:#003262; font-weight:bolder"> MoMo (MTN and VODAFONE) </span>(for applicants in Ghana) or
-                                <span style="color:#003262; font-weight:bolder"> Card (Visa, Master) </span>, or by dialing
-                                <span style="color:#003262; font-weight:bolder"> shortcode *447*8# (MTN and VODAFONE) </span>
-                                (for applicants in Ghana), and also from any of the<a href="#vendor-list"> vendors listed here</a>.
+                                </a> or dial the shortcode <span style="color:#003262; font-weight:bolder">*447*8#</span> (MTN and VODAFONE for applicants in Ghana only)
+                                , or from any of the <span style="color:#003262; font-weight:bolder"><a href="#vendor-list">vendors listed here</a></span>.
                             </p>
                         </div>
                         <div class="app-step row">
