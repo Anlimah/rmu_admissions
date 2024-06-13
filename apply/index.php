@@ -36,7 +36,7 @@ if (!isset($_SESSION["_start"])) {
                             <p class="col-11">
                                 Purchase an e-voucher using Mobile Money, Card (Visa & Master), or Cash.
                                 <a href="https://forms.rmuictonline.com">
-                                    <span style="color: red; font-weight:bolder"> Click here to buy</span>
+                                    <span style="color: red; font-weight:bolder"> Click here</span> to purchase
                                     <span style="color:#003262; font-weight:bolder"> online </span>
                                 </a> or dial the shortcode <span style="color:#003262; font-weight:bolder">*447*8#</span> (MTN and VODAFONE for applicants in Ghana only)
                                 , or from any of the <span style="color:#003262; font-weight:bolder"><a href="#vendor-list">vendors listed here</a></span>.
