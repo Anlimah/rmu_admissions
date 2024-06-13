@@ -120,12 +120,12 @@ if (!isset($_SESSION["_start"])) {
 
                                     <div class="mb-4">
                                         <label class="form-label" for="app_number">Application Number</label>
-                                        <input class="form-control form-control-lg form-control-login" type="text" id="app_number" name="app_number" placeholder="Application Number">
+                                        <input class="form-control form-control-lg form-control-login" type="text" id="app_number" name="app_number" placeholder="RMU-123456789">
                                     </div>
 
                                     <div class="mb-4">
                                         <label class="form-label" for="pin_code">PIN Code</label>
-                                        <input class="form-control form-control-lg form-control-login" type="password" id="pin_code" name="pin_code" placeholder="PIN Code">
+                                        <input class="form-control form-control-lg form-control-login" type="password" id="pin_code" name="pin_code" placeholder="ABCD012345">
                                     </div>
 
                                     <div class="mb-4">
