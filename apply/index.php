@@ -34,7 +34,19 @@ if (!isset($_SESSION["_start"])) {
                         <div class="app-step row">
                             <div class="col-1 text-center">1</div>
                             <p class="col-11">
-                                Purchase an e-voucher using Mobile Money, Card (Visa & Master), or Cash.
+                                <span style="color:#003262; font-weight:bolder">International applicants</span> should visit this
+                                <a href="https://forms.rmuictonline.com">
+                                    <span style="color: red; font-weight:bolder"> Link </span>
+                                </a> (
+                                <a href="https://forms.rmuictonline.com">
+                                    <span style="color: red; font-weight:bolder"> Link </span>
+                                </a>) to purchase an e-voucher using <span style="color:#003262; font-weight:bolder">ONLY</span> Card (Visa & Master).
+                            </p>
+                        </div>
+                        <div class="app-step row">
+                            <div class="col-1 text-center">1</div>
+                            <p class="col-11">
+                                <span style="color:#003262; font-weight:bolder">Local (Ghanaian) applicants</span> can purchase an e-voucher using Mobile Money, Card (Visa & Master), or Cash.
                                 <a href="https://forms.rmuictonline.com">
                                     <span style="color: red; font-weight:bolder"> Click here</span>
                                 </a> to purchase <span style="color:#003262; font-weight:bolder"> online </span>
@@ -93,7 +105,6 @@ if (!isset($_SESSION["_start"])) {
                                 On subsequent logins after your form been submitted, you will be sent to a tracking page where
                                 you can track and print the application form you filled. </p>
                         </div>
-
                     </section>
                 </div>
 
