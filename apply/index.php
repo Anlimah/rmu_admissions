@@ -44,7 +44,7 @@ if (!isset($_SESSION["_start"])) {
                             </p>
                         </div>
                         <div class="app-step row">
-                            <div class="col-1 text-center">1</div>
+                            <div class="col-1 text-center">2</div>
                             <p class="col-11">
                                 <span style="color:#003262; font-weight:bolder">Local (Ghanaian) applicants</span> can purchase an e-voucher using Mobile Money, Card (Visa & Master), or Cash.
                                 <a href="https://forms.rmuictonline.com">
@@ -55,21 +55,21 @@ if (!isset($_SESSION["_start"])) {
                             </p>
                         </div>
                         <div class="app-step row">
-                            <div class="col-1 text-center">2</div>
+                            <div class="col-1 text-center">3</div>
                             <p class="col-11">
                                 We recommend you use <span style="color:#003262; font-weight:bolder">Google Chrome</span> or <span style="color:#003262; font-weight:bolder">Mozilla Firefox</span> browser
                                 to complete your application.
                             </p>
                         </div>
                         <div class="app-step row">
-                            <div class="col-1 text-center">3</div>
+                            <div class="col-1 text-center">4</div>
                             <p class="col-11">
                                 Login with the form on the right hand side, using the voucher <span style="color:#003262; font-weight:bolder">APPLICATION NUMBER</span> and
                                 <span style="color:#003262; font-weight:bolder">PIN CODE</span> that was provided to you via SMS and/or Email or vendor.
                             </p>
                         </div>
                         <div class="app-step row">
-                            <div class="col-1 text-center">4</div>
+                            <div class="col-1 text-center">5</div>
                             <p class="col-11">
                                 The application form is sub-divided into 5 sections. After filling form in each section, click
                                 <span style="color:#003262; font-weight:bolder">CHECK AND CONTINUE</span> button
@@ -77,20 +77,20 @@ if (!isset($_SESSION["_start"])) {
                             </p>
                         </div>
                         <div class="app-step row">
-                            <div class="col-1 text-center">5</div>
+                            <div class="col-1 text-center">6</div>
                             <p class="col-11">
                                 The applicant’s passport picture should be in <span style="color:red; font-weight:bolder">.jpg, .jpeg, .png </span> or
                                 <span style="color:red; font-weight:bolder">.gif</span> format and must not exceed 100KB in size. Make sure you upload a picture showing your face clearly.
                             </p>
                         </div>
                         <div class="app-step row">
-                            <div class="col-1 text-center">6</div>
+                            <div class="col-1 text-center">7</div>
                             <p class="col-11">
                                 Your progress will be <span style="color:#003262; font-weight:bolder">saved automatically</span> as you fill the form to enable you focus on your work.
                             </p>
                         </div>
                         <div class="app-step row">
-                            <div class="col-1 text-center">7</div>
+                            <div class="col-1 text-center">8</div>
                             <p class="col-11">
                                 In the final section, verify and make sure that all information provided is correct before you submit.
                                 Clicking the <span style="color:#003262; font-weight:bolder">SUBMIT AND PRINT</span> button to submit the form and
@@ -99,7 +99,7 @@ if (!isset($_SESSION["_start"])) {
                             </p>
                         </div>
                         <div class="app-step row">
-                            <div class="col-1 text-center">8</div>
+                            <div class="col-1 text-center">9</div>
                             <p class="col-11">
                                 Click <span style="color:#003262; font-weight:bolder">logout button</span> to leave the page.
                                 On subsequent logins after your form been submitted, you will be sent to a tracking page where
