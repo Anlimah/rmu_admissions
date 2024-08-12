@@ -34,7 +34,7 @@ if (!isset($_SESSION["_start"])) {
                         <div class="app-step row">
                             <div class="col-1 text-center">1</div>
                             <p class="col-11">
-                                <span style="color:#003262; font-weight:bolder">International applicants</span> should visit this
+                                <span style="color:#003262; font-weight:bolder">International applicants</span> should click on this
                                 <a href="https://forms.rmuictonline.com">
                                     <span style="color: red; font-weight:bolder"> Link </span>
                                 </a> (
