@@ -1,7 +1,6 @@
 <nav class="fp-header">
     <div class="info-board">
         <div class="info-board-items">
-
             <div class="board-items">
                 <span class="bi bi-calendar2-week-fill"></span>
                 <span class="info">Mon - Fri 8:00 - 16:00</span>
@@ -31,7 +30,6 @@
             <a id="logout-icon" href="?logout=true" style="color: #fff !important">
                 <span class="bi bi-power" style="font-size: 28px; color: #fff; cursor:pointer"></span>
             </a>
-
         </div>
     </div>
 </nav>

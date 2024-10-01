@@ -16,9 +16,6 @@ if (isset($_GET['logout'])) {
     header('Location: ./index.php');
 }
 
-?>
-<?php
-
 $user_id = isset($_SESSION['ghApplicant']) && !empty($_SESSION["ghApplicant"]) ? $_SESSION["ghApplicant"] : "";
 
 require_once('../bootstrap.php');
@@ -35,333 +32,416 @@ if (!empty($appStatuses) && ($appStatuses[0]["admitted"] || $appStatuses[0]["dec
 }
 
 $page = array("id" => 0, "name" => "Application Status");
+
+$notification_count = 1;
+$first_name = 'FRANCIS';
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <title>Application Status</title>
-    <link rel="stylesheet" href="../assets/css/main.css">
-    <?php require_once("../inc/apply-head-section.php") ?>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f5f5f5;
+        }
+
+        .navbar {
+            background-color: #003262;
+        }
+
+        .navbar .navbar-brand,
+        .navbar .nav-link,
+        .navbar .btn {
+            color: white;
+        }
+
+        .navbar .bi-bell,
+        .navbar .bi-list {
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .notification-icon {
+            position: relative;
+            margin-right: 15px;
+        }
+
+        .menu-toggle {
+            margin-left: 15px;
+        }
+
+        .notification-icon::after {
+            content: '<?= $notification_count ?>';
+            position: absolute;
+            top: -3px;
+            right: -8px;
+            background-color: red;
+            color: white;
+            padding: 0px 7px;
+            border-radius: 50%;
+            font-size: 12px;
+            font-weight: bolder;
+        }
+
+        #profile-img {
+            border-radius: 50%;
+            width: 40px;
+        }
+
+        .dashboard {
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .dashboard-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .dashboard-header img {
+            border-radius: 50%;
+            width: 50px;
+        }
+
+        .dashboard-actions {
+            display: flex;
+            width: 100%;
+            padding: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            text-align: center;
+            padding: 10px;
+        }
+
+        .card-icon {
+            background-color: #e9ecef;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px auto 0;
+        }
+
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            padding: 10px;
+            background-color: #f1f1f1;
+        }
+
+        /* Sidebar */
+        /* Sidebar styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -70%;
+            width: 70%;
+            /* Covers more than half the screen */
+            height: 100%;
+            background-color: #fff;
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+            transition: right 0.3s ease;
+            z-index: 10000;
+            padding: 20px;
+        }
+
+        .sidebar.open {
+            right: 0;
+        }
+
+        /* Modal background overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            /* Dark background */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            z-index: 9999;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Profile section */
+        .sidebar .profile-section {
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 15px;
+        }
+
+        /* Menu items */
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+
+        .sidebar ul li {
+            padding: 10px 0;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .sidebar ul li:hover {
+            background-color: #f1f1f1;
+            border-radius: 5px;
+        }
+
+        .sidebar ul li i {
+            font-size: 20px;
+        }
+
+        .sidebar .d-flex {
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar .me-2 {
+            margin-right: 8px;
+        }
+
+        @media (min-width: 768px) {
+            #profile-img {
+                display: none;
+            }
+
+            #logout-btn {
+                display: block;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-actions {
+                flex-direction: column;
+            }
+
+            #logout-btn {
+                display: none;
+            }
+        }
+
+        @media (max-width: 576px) {
+
+            .dashboard {
+                display: none !important;
+            }
+
+            .dashboard-header {
+                justify-content: flex-start;
+            }
+
+            .menu-toggle {
+                display: block;
+                cursor: pointer;
+            }
+
+            .sidebar {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 250px;
+                height: 100%;
+                background-color: #fff;
+                box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+                transition: right 0.3s ease;
+                z-index: 9999;
+                padding: 20px;
+            }
+
+            .sidebar.open {
+                right: 0;
+            }
+
+            .sidebar ul {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+
+            .sidebar ul li {
+                padding: 20px;
+                border-bottom: 1px solid #ddd;
+            }
+        }
+    </style>
 </head>
 
-<body id="body">
+<body>
 
-    <div id="wrapper">
-
-        <?php require_once("../inc/page-nav.php") ?>
-
-        <main class="container">
-            <div class="row">
-
-                <section class="easy-apply" style="margin-top: 25px;">
-                    <div class="page_info" style="margin-bottom: 0px !important;">
-                        <h1><?= $page["name"] ?></h1>
-
-                        <?php
-                        if (!empty($appStatuses)) {
-                            if ($appStatuses[0]["admitted"]) {
-                        ?>
-                                <div>
-                                    <div class="mb-4">
-                                        <h4 class="text-success">Congratulations on Your Admission to <b>Regional Maritime University</b>!</h4>
-                                    </div>
-                                    <div>
-                                        <p>Dear <?= $personal[0]["first_name"] . $personal[0]["last_name"] ?>,</p>
-                                        <p>
-                                            We are pleased to inform you that you have been offered admission to Regional Maritime University for the <?= "[Program name]" ?>. This is a significant achievement, and we extend our warmest congratulations to you.
-                                        </p>
-                                        <p>
-                                            To accept your admission and proceed with the enrollment process, please follow the steps below:
-                                        </p>
-                                        <ol style="list-style:lower-alpha">
-                                            <li>Locate and complete the acceptance form provided.</li>
-                                            <li>Make the necessary fee payment as instructed.</li>
-                                        </ol>
-                                        <p>Please note that the acceptance of your admission offer must be completed by <?= "[Deadline Date]" ?> to secure your place in the program. Failure to do so may result in the offer being revoked.</p>
-                                        <p>We look forward to welcoming you to our campus and sharing an enriching academic journey together.</p>
-                                    </div>
-                                </div>
-                            <?php
-                            } else if ($appStatuses[0]["declined"]) {
-                            ?>
-                                <div>
-                                    <div class="mb-4">
-                                        <h4 class="text-danger"><b>Admission Decision</b>.</h4>
-                                    </div>
-                                    <div>
-                                        <p>Dear <?= $personal[0]["first_name"] . " " . $personal[0]["last_name"] ?>,</p>
-                                        <p>
-                                            We regret to inform you that your application for admission to Regional Maritime University for the <?= "program" ?> has been declined.</p>
-                                        <p>
-                                            We appreciate your interest in our institution and the time and effort you put into your application. Unfortunately, we received a high number of qualified applicants, making our selection process highly competitive. After careful consideration, we regret to inform you that we were unable to offer you admission at this time.
-                                        </p>
-                                        <p>We understand that this news may be disappointing, but we encourage you to explore other educational opportunities and pursue your academic goals elsewhere. We wish you the best of luck in your future endeavors.</p>
-                                        <p>If you have any questions or require further information, please feel free to contact our admissions office at <a href="tel:+233302712775">(+233) 302 712775</a> or <a href="mailto:admission@rmu.edu.gh">admission@rmu.edu.gh</a> . Our team is available to assist you.</p>
-                                        <p>Thank you for considering Regional Maritime University, and we appreciate your understanding.</p>
-                                    </div>
-                                </div>
-                            <?php
-                            } else {
-                            ?>
-                                <div>
-                                    <div class="mb-4">
-                                        <h4 class="text-success">Congratulations! Your application form was successfully submitted.</h4>
-                                    </div>
-
-                                    <div class="alert alert-info text-default" id="page_info_text" style="width: 100%; border: none !important">
-                                        <h4 class="alert-heading">Please note the following:</h4>
-                                        <ul style="list-style-type: disc;">
-                                            <li>Frequently visit this page to check your application status.</li>
-                                            <li>When admitted, a SMS and/or an email will be sent to your personal email address and/or phone number you provided during application.</li>
-                                            <li>You will then need to visit this page again, and fill an acceptance form, which will guarantee your admission.</li>
-                                            <li>For any other information, please contact the Regional Maritime University for assistance.</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                        <?php
-                            }
-                        }
-                        ?>
-                    </div>
-
-                    <div class="mt-4">
-                        <label for="">
-                            <span class="me-4">You can download a copy of your application form for your personal keep <b>(Not to be submitted)</b></span>
-                            <a href="./download-copy.php?q=<?= isset($_SESSION['ghApplicant']) ? $_SESSION['ghApplicant'] : "" ?>" class="btn btn-primary btn-sm" style="color: #fff !important">Download</a>
-                        </label>
-                    </div>
-
-                    <?php if (empty($appStatuses[0]["admitted"]) && empty($appStatuses[0]["declined"])) { ?>
-                        <hr class="mb-4 mt-4">
-
-                        <div class="mb-4 mt-4">
-                            <h4 for="">Your application's progress status</h4>
-                            <div>
-                                <style>
-                                    #form {
-                                        text-align: center;
-                                        position: relative;
-                                        margin-top: 20px
-                                    }
-
-                                    #form fieldset {
-                                        background: white;
-                                        border: 0 none;
-                                        border-radius: 0.5rem;
-                                        box-sizing: border-box;
-                                        width: 100%;
-                                        margin: 0;
-                                        padding-bottom: 20px;
-                                        position: relative
-                                    }
-
-                                    .finish {
-                                        text-align: center
-                                    }
-
-                                    #form fieldset:not(:first-of-type) {
-                                        display: none
-                                    }
-
-                                    #form .pre-step {
-                                        width: 100px;
-                                        font-weight: bold;
-                                        color: white;
-                                        border: 0 none;
-                                        border-radius: 0px;
-                                        cursor: pointer;
-                                        padding: 10px 5px;
-                                        margin: 10px 5px 10px 0px;
-                                        float: right
-                                    }
-
-                                    .next-step {
-                                        width: 100px;
-                                        font-weight: bold;
-                                        color: white;
-                                        border: 0 none;
-                                        border-radius: 0px;
-                                        cursor: pointer;
-                                        padding: 10px 5px;
-                                        margin: 10px 5px 10px 0px;
-                                        float: right
-                                    }
-
-                                    .form,
-                                    .pre-step {
-                                        background: #616161;
-                                    }
-
-                                    .form,
-                                    .next-step {
-                                        background: red;
-                                    }
-
-                                    #form .pre-step:hover {
-                                        background-color: #000000
-                                    }
-
-                                    #form .pre-step:focus {
-                                        background-color: #000000
-                                    }
-
-                                    #form .next-step:hover {
-                                        background-color: #2F8D46
-                                    }
-
-                                    #form .next-step:focus {
-                                        background-color: #2F8D46
-                                    }
-
-                                    .text {
-                                        color: red;
-                                        font-weight: normal
-                                    }
-
-                                    #progressbar {
-                                        margin-bottom: 30px;
-                                        overflow: hidden;
-                                        color: lightgrey
-                                    }
-
-                                    #progressbar .active {
-                                        color: #2F8D46
-                                    }
-
-                                    #progressbar li {
-                                        list-style-type: none;
-                                        font-size: 14px;
-                                        width: 25%;
-                                        float: left;
-                                        position: relative;
-                                        font-weight: 400
-                                    }
-
-                                    #progressbar #step1:before {
-                                        content: "1"
-                                    }
-
-                                    #progressbar #step2:before {
-                                        content: "2"
-                                    }
-
-                                    #progressbar #step3:before {
-                                        content: "3"
-                                    }
-
-                                    #progressbar #step4:before {
-                                        content: "4"
-                                    }
-
-                                    #progressbar li:before {
-                                        width: 50px;
-                                        height: 50px;
-                                        line-height: 45px;
-                                        display: block;
-                                        font-size: 20px;
-                                        color: #ffffff;
-                                        background: lightgray;
-                                        border-radius: 50%;
-                                        margin: 0 auto 10px auto;
-                                        padding: 2px
-                                    }
-
-                                    #progressbar li:after {
-                                        content: '';
-                                        width: 100%;
-                                        height: 2px;
-                                        background: lightgray;
-                                        position: absolute;
-                                        left: 0;
-                                        top: 25px;
-                                        z-index: -1
-                                    }
-
-                                    #progressbar li.active:before {
-                                        background: #2F8D46
-                                    }
-
-                                    #progressbar li.active:after {
-                                        background: #2F8D46
-                                    }
-
-                                    #progressbar li.active:after {
-                                        background: #2F8D46
-                                    }
-
-                                    h2 {
-                                        text-transform: uppercase;
-                                        font-weight: normal;
-                                        text-align: center;
-                                        margin: 10;
-                                        padding: 10;
-                                        color: red;
-                                    }
-
-                                    .progress {
-                                        height: 20px
-                                    }
-
-                                    .pbar {
-                                        background-color: #2F8D46
-                                    }
-                                </style>
-
-                                <div class="container">
-                                    <div class="row justify-content-center">
-                                        <div class="col-12 text-center p-0 mb-2">
-                                            <div class="px-0 pt-4 pb-0 mt-3 mb-3">
-                                                <form id="form">
-                                                    <ul id="progressbar">
-                                                        <li class="active" id="step1">
-                                                            <strong> <span class="bi bi-send-check"></span> Submitted </strong>
-                                                        </li>
-                                                        <li id="step2" class="<?= !empty($appStatuses) ? ($appStatuses[0]["reviewed"] ? "active" : "") : "" ?>">
-                                                            <strong> <span class="bi bi-yelp"></span> Reviewed </strong>
-                                                        </li>
-                                                        <li id="step3" class="<?= !empty($appStatuses) ? (($appStatuses[0]["admitted"] || $appStatuses[0]["declined"]) ? "active" : "") : "" ?>">
-                                                            <strong> <span class="bi bi-list-check"></span> Admission </strong>
-                                                        </li>
-                                                    </ul>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                    <?php
-                    }
-                    ?>
-                </section>
-
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <img src="../assets/images/rmu-logo.png" alt="University Logo" class="me-2" width="30">
+                RMU
+            </a>
+            <div class="d-flex align-items-center">
+                <i class="bi bi-bell notification-icon" style="cursor: pointer;"></i>
+                <a id="logout-btn" class="btn btn-outline-light ms-2" href="?logout=true">Sign Out</a>
+                <!-- <i class="bi bi-list menu-toggle ms-3 d-lg-none"></i> -->
+                <img id="profile-img" src="../assets/images/1634729520211-removebg-preview.png" alt="Profile Image" class="menu-toggle">
             </div>
-        </main>
-        <?php require_once("../inc/page-footer.php"); ?>
+        </div>
+    </nav>
 
-        <?php //require_once("../inc/app-sections-menu.php"); 
-        ?>
+    <div class="dashboard">
+        <div class="container">
+            <div class="dashboard-header">
+                <div>
+                    <img src="../assets/images/1634729520211-removebg-preview.png" alt="Profile Image">
+                    <span class="ms-3">Hello, <?= $first_name ?></span>
+                </div>
+                <div class="dashboard-buttons d-none d-lg-flex">
+                    <button class="btn btn-success me-3">
+                        <i class="bi bi-check-circle"></i> Accept Admission
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <script src="../js/jquery-3.6.0.min.js"></script>
-    <script src="../js/myjs.js"></script>
-    <script>
-        $(document).ready(function() {
-            var currentGfgStep, nextGfgStep, preGfgStep;
-            var opacity;
-            var current = 1;
-            var steps = $("fieldset").length;
+    <div class="alert alert-info" role="alert" style="display: none;"></div>
 
-            setProgressBar(current);
+    <div class="container" style="margin-top:70px">
 
-            $(".submit").click(function() {
-                return false;
+        <div class="row">
+            <!-- Card 1 -->
+            <div class="col-lg-3 col-md-6 col-sm-12 mb-3">
+                <div class="card shadow-sm">
+                    <div class="card-icon bg-primary text-white">
+                        <i class="bi bi-file-earmark-text"></i>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">Application Summary</h5>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="col-lg-3 col-md-6 col-sm-12 mb-3">
+                <div class="card shadow-sm">
+                    <div class="card-icon bg-warning text-white">
+                        <i class="bi bi-gear"></i>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">Configure Application</h5>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="col-lg-3 col-md-6 col-sm-12 mb-3">
+                <div class="card shadow-sm">
+                    <div class="card-icon bg-success text-white">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">Admission Status</h5>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="col-lg-3 col-md-6 col-sm-12 mb-3">
+                <div class="card shadow-sm">
+                    <div class="card-icon bg-info text-white">
+                        <i class="bi bi-download"></i>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">Admission Letter</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar for mobile view -->
+        <!-- Modal Background -->
+        <div class="modal-overlay" id="modalOverlay"></div>
+
+        <!-- Sidebar for mobile view -->
+        <div class="sidebar" id="sidebar">
+            <div class="profile-section d-flex align-items-center mb-4">
+                <img src="../assets/images/1634729520211-removebg-preview.png" alt="Profile Image" class="me-2" style="border-radius: 50%; width: 40px;">
+                <span>Hello, <?= $first_name ?></span>
+            </div>
+            <ul>
+                <li class="d-flex align-items-center mb-3">
+                    <i class="bi bi-check-circle me-2"></i>
+                    Accept Admission
+                </li>
+                <li class="d-flex align-items-center mb-3" style="justify-content: space-between;">
+                    <i class="bi bi-file-earmark-text me-2"></i>
+                    <span>Application Summary</span>
+                </li>
+                <a href="?logout=true">
+                    <li class="d-flex align-items-center mb-3">
+                        <i class="bi bi-box-arrow-right me-2"></i>
+                        Sign Out
+                    </li>
+                </a>
+            </ul>
+        </div>
+
+        <!-- Footer Section -->
+        <footer class="footer">
+            <p>&copy; 2024 University. All rights reserved.</p>
+        </footer>
+
+        <!-- Bootstrap JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            // JavaScript to handle opening and closing the sidebar and modal
+            document.addEventListener('DOMContentLoaded', function() {
+                // Toggle sidebar for mobile view
+                const menuToggle = document.querySelector('.menu-toggle');
+                const sidebar = document.getElementById('sidebar');
+                const modalOverlay = document.getElementById('modalOverlay');
+
+                // Open the sidebar
+                function openSidebar() {
+                    sidebar.classList.add('open');
+                    modalOverlay.classList.add('active');
+                }
+
+                // Close the sidebar
+                function closeSidebar() {
+                    sidebar.classList.remove('open');
+                    modalOverlay.classList.remove('active');
+                }
+
+                // Open sidebar when click on menu/profile-img
+                menuToggle.addEventListener('click', function() {
+                    openSidebar();
+                });
+
+                // Close sidebar when clicking outside (on the modal overlay)
+                modalOverlay.addEventListener('click', function() {
+                    closeSidebar();
+                });
             });
-
-        });
-    </script>
+        </script>
 </body>
 
 </html>
