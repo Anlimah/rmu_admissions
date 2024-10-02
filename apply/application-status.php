@@ -63,15 +63,6 @@ $documentUploaded = $user->fetchUploadedDocs($user_id);
 $notifications = $user->fetchAppUnreadNotifications($user_id);
 $notification_count = $notifications ? count($notifications) : 0;
 
-var_dump(['personalInfo' => $personalInfo]);
-echo '<br>';
-var_dump(['academicBgInfo' => $academicBgInfo]);
-echo '<br>';
-var_dump(['programInfo' => $programInfo]);
-echo '<br>';
-var_dump(['documentUploaded' => $documentUploaded]);
-echo '<br>';
-
 $avatar = (isset($personalInfo) && !empty($personalInfo[0]["photo"])) ? 'photos/' . $personalInfo[0]["photo"] : '../assets/images/default-avatar.jpg';
 
 $page = array("id" => 0, "name" => "Application Status");
