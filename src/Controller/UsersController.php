@@ -265,7 +265,7 @@ class UsersController
     {
         $sql = "SELECT `school_name`, `s_number`, `country`, `region`, `city`, `cert_type`, 
                 `month_started`, `year_started`, `month_completed`, `year_completed`, 
-                `index_number`, `course_of_study`, `awaiting_result` 
+                `index_number`, `course_of_study`, `other_course_studied`, `awaiting_result` 
                 FROM `academic_background` WHERE `app_login` = :a";
         return $this->dm->getData($sql, array(':a' => $user_id));
     }
@@ -395,9 +395,22 @@ class UsersController
                 VALUES (:sr, :sn, :cn, :rg, :ci, :ct, :oct, :im, :ms, :ys, :mc, :yc, :cs, :ocs, :ar, :al)";
 
         $params = array(
-            ":sr" => $serial_number, ":sn" => $sn, ":cn" => $cn, ":rg" => $rg,
-            ":ci" => $ci, ":ct" => $ct, ":oct" => $oct, ":im" => $im, ":ms" => $ms, ":ys" => $ys,
-            ":mc" => $mc, ":yc" => $yc, ":cs" => $cs, ":ocs" => $ocs, ":ar" => $ar, ":al" => $al
+            ":sr" => $serial_number,
+            ":sn" => $sn,
+            ":cn" => $cn,
+            ":rg" => $rg,
+            ":ci" => $ci,
+            ":ct" => $ct,
+            ":oct" => $oct,
+            ":im" => $im,
+            ":ms" => $ms,
+            ":ys" => $ys,
+            ":mc" => $mc,
+            ":yc" => $yc,
+            ":cs" => $cs,
+            ":ocs" => $ocs,
+            ":ar" => $ar,
+            ":al" => $al
         );
 
         if ($this->dm->inputData($sql, $params)) {
@@ -416,9 +429,22 @@ class UsersController
                 WHERE  `s_number` = :sr AND `app_login` = :al";
 
         $params = array(
-            ":sr" => $sr, ":sn" => $sn, ":cn" => $cn, ":rg" => $rg,
-            ":ci" => $ci, ":ct" => $ct, ":oct" => $oct, ":im" => $im, ":ms" => $ms, ":ys" => $ys,
-            ":mc" => $mc, ":yc" => $yc, ":cs" => $cs, ":ocs" => $ocs, ":ar" => $ar, ":al" => $al
+            ":sr" => $sr,
+            ":sn" => $sn,
+            ":cn" => $cn,
+            ":rg" => $rg,
+            ":ci" => $ci,
+            ":ct" => $ct,
+            ":oct" => $oct,
+            ":im" => $im,
+            ":ms" => $ms,
+            ":ys" => $ys,
+            ":mc" => $mc,
+            ":yc" => $yc,
+            ":cs" => $cs,
+            ":ocs" => $ocs,
+            ":ar" => $ar,
+            ":al" => $al
         );
 
         if ($this->dm->inputData($sql, $params)) return $sr;
@@ -569,6 +595,13 @@ class UsersController
         return $data;
     }
 
+    public function fetchAppPurchaseDetails($user_id)
+    {
+        $query = "SELECT pd.* FROM `purchase_detail` AS pd, `applicants_login` AS al 
+        WHERE al.`id` = :a AND al.purchase_id = pd.id";
+        return $this->dm->getData($query, array(':a' => $user_id));
+    }
+
     public function fetchApplicantPhoto($user_id)
     {
         $query = "SELECT `photo` FROM `personal_information` WHERE `app_login` = :a";
@@ -577,7 +610,7 @@ class UsersController
 
     public function fetchApplicationStatus($appID)
     {
-        $query = "SELECT `reviewed`, `admitted`, `declined` FROM `form_sections_chek` WHERE `app_login` = :i";
+        $query = "SELECT * FROM `form_sections_chek` WHERE `app_login` = :i";
         return $this->dm->getData($query, array(":i" => $appID));
     }
 
@@ -593,5 +626,21 @@ class UsersController
                 break;
         }
         return $this->dm->getData($query);
+    }
+
+    public function fetchAppNotifications($appID)
+    {
+        return $this->dm->getData(
+            "SELECT * FROM notifications WHERE `to` = :a",
+            array(":a" => $appID)
+        );
+    }
+
+    public function fetchAppUnreadNotifications($appID)
+    {
+        return $this->dm->getData(
+            "SELECT * FROM notifications WHERE `to` = :a AND `read` = 0",
+            array(":a" => $appID)
+        );
     }
 }
