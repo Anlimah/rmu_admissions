@@ -15,6 +15,7 @@ if (isset($_GET['logout'])) {
     session_destroy();
     header('Location: ./index.php');
 }
+$_SESSION["lastAccessed"] = time();
 
 $user_id = isset($_SESSION['ghApplicant']) && !empty($_SESSION["ghApplicant"]) ? $_SESSION["ghApplicant"] : "";
 
@@ -55,15 +56,32 @@ $statusesInfo = [
     ]
 ];
 
+$photo = $user->fetchApplicantPhoto($user_id);
+$personal = $user->fetchApplicantPersI($user_id);
+$appStatus = $user->getApplicationStatus($user_id);
+$pre_uni_rec = $user->fetchApplicantPreUni($user_id);
+$academic_BG = $user->fetchApplicantAcaB($user_id);
+$app_type = $user->getApplicationType($user_id);
+$personal_AB = $user->fetchApplicantProgI($user_id);
+$about_us = $user->fetchHowYouKnowUs($user_id);
+$uploads = $user->fetchUploadedDocs($user_id);
+$form_name = $user->getFormTypeName($app_type[0]["form_id"]);
+$app_number = $user->getApplicantAppNum($user_id);
+$uploaded_receipt = $user->getAppUploadedAcceptanceReceipt($user_id);
 $purchaseInfo = $user->fetchAppPurchaseDetails($user_id);
-$personalInfo = $user->fetchApplicantPersI($user_id);
-$academicBgInfo = $user->fetchApplicantAcaB($user_id);
-$programInfo = $user->fetchApplicantProgI($user_id);
-$documentUploaded = $user->fetchUploadedDocs($user_id);
+
+$avatar = (isset($photo) && !empty($photo[0]["photo"])) ? 'photos/' . $photo[0]["photo"] : '../assets/images/default-avatar.jpg';
+
+
+if (!$uploaded_receipt) {
+    if (!isset($_SESSION["_acceptFormValidToken"])) {
+        $rstrong = true;
+        $_SESSION["_acceptFormValidToken"] = hash('sha256', bin2hex(openssl_random_pseudo_bytes(64, $rstrong)));
+    }
+}
+
 $notifications = $user->fetchAppUnreadNotifications($user_id);
 $notification_count = $notifications ? count($notifications) : 0;
-
-$avatar = (isset($personalInfo) && !empty($personalInfo[0]["photo"])) ? 'photos/' . $personalInfo[0]["photo"] : '../assets/images/default-avatar.jpg';
 
 $page = array("id" => 0, "name" => "Application Status");
 
@@ -420,6 +438,131 @@ $page = array("id" => 0, "name" => "Application Status");
                 width: 100%;
             }
         }
+
+
+
+        .flex-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .flex-container>div {
+            height: 100% !important;
+            width: 100% !important;
+        }
+
+        .flex-column {
+            display: flex !important;
+            flex-direction: column !important;
+        }
+
+        .flex-row {
+            display: flex !important;
+            flex-direction: row !important;
+        }
+
+        .justify-center {
+            justify-content: center !important;
+        }
+
+        .justify-space-between {
+            justify-content: space-between !important;
+        }
+
+        .align-items-center {
+            align-items: center !important;
+        }
+
+        .align-items-baseline {
+            align-items: baseline !important;
+        }
+
+        .flex-card {
+            display: flex !important;
+            justify-content: center !important;
+            flex-direction: row !important;
+        }
+
+        .form-card {
+            height: 100% !important;
+            max-width: 425px !important;
+            padding: 15px 10px 20px 10px !important;
+        }
+
+        .flex-card>.form-card {
+            height: 100% !important;
+            width: 100% !important;
+        }
+
+        .purchase-card-footer {
+            width: 100% !important;
+        }
+
+        .arrow {
+            display: inline-block;
+            margin-left: 10px;
+        }
+
+        .edu-history {
+            width: 100% !important;
+            /*height: 120px !important;*/
+            background-color: #fff !important;
+            border: 1px solid #ccc !important;
+            border-radius: 5px !important;
+            display: flex !important;
+            flex-direction: column !important;
+        }
+
+        .edu-history-header {
+            width: 100% !important;
+            background-color: #fff !important;
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: space-between !important;
+        }
+
+        .edu-history-header-info {
+            width: 100% !important;
+            height: 100% !important;
+            padding: 10px 20px !important;
+        }
+
+        .edu-history-control {
+            height: 50px !important;
+            background-color: #e6e6e6 !important;
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: space-between !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        .edu-history-footer {
+            width: 100% !important;
+            height: 100% !important;
+            background-color: #ffffb3 !important;
+            margin: 0 !important;
+            display: flex !important;
+            flex-direction: row !important;
+            padding: 6px 20px !important;
+        }
+
+        .photo-display {
+            width: 220px !important;
+            height: 220px !important;
+            min-width: 150px !important;
+            min-height: 150px !important;
+            /*background: red;*/
+            border-radius: 5px;
+            background: #f1f1f1;
+            padding: 5px;
+        }
+
+        .photo-display>img {
+            width: 100% !important;
+            height: 100% !important;
+        }
     </style>
 </head>
 
@@ -445,11 +588,11 @@ $page = array("id" => 0, "name" => "Application Status");
             <div class="dashboard-header">
                 <div>
                     <img src="<?= $avatar ?>" alt="Profile Image">
-                    <span class="ms-3">Hello, <?= $personalInfo[0]["first_name"] ?></span>
+                    <span class="ms-3">Hello, <?= $personal[0]["first_name"] ?></span>
                 </div>
                 <div class="dashboard-buttons d-none d-lg-flex">
                     <?php if ($statuses && $statuses[0]["admitted"]) { ?>
-                        <button class="btn btn-success me-3">
+                        <button class="btn btn-success me-3" data-bs-toggle="modal" data-bs-target="#accept-admission-modal">
                             <i class="bi bi-check-circle"></i> Accept Admission
                         </button>
                     <?php } ?>
@@ -523,10 +666,10 @@ $page = array("id" => 0, "name" => "Application Status");
         <div class="sidebar" id="sidebar">
             <div class="profile-section d-flex align-items-center mb-4">
                 <img src="<?= $avatar ?>" alt="Profile Image" class="me-2" style="border-radius: 50%; width: 40px;">
-                <span>Hello, <?= $personalInfo[0]["first_name"] ?></span>
+                <span>Hello, <?= $personal[0]["first_name"] ?></span>
             </div>
             <ul>
-                <li class="d-flex align-items-center mb-3">
+                <li class="d-flex align-items-center mb-3" data-bs-toggle="modal" data-bs-target="#accept-admission-modal">
                     <i class="bi bi-check-circle me-2"></i>
                     Accept Admission
                 </li>
@@ -650,9 +793,104 @@ $page = array("id" => 0, "name" => "Application Status");
                     </div>
                     <div class="modal-footer">
                         <div class="download-footer">
-                            <a id="adm-letter-download-link" class="btn btn-primary btn-sm" download>Download Letter</a>
-                            <a id="adm-letter-download-link" class="btn btn-success btn-sm" download>Download Supplimentary Sheet</a>
+                            <a id="adm-letter-download-link" target="_blank" class="btn btn-primary btn-sm" download>Download Letter</a>
+                            <a id="adm-letter-download-link" target="_blank" class="btn btn-success btn-sm" download>Download Supplimentary Sheet</a>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="accept-admission-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="accept-admission-modalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="accept-admission-modalLabel">Accept Admission</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div style="margin-bottom: 30px;">
+                            <h6><strong>NB:</strong></h6>
+                            <ul>
+                                <li>You can only accept admission after you have completed with payment of your <strong class="text-primary">commitment fees</strong> which forms part of your first semester fees as stated in the admission letter.</li>
+                                <li>Please ensure that all provided information is accurate. <strong class="text-danger">False information may result in appropriate consequences</strong>.</li>
+                            </ul>
+                        </div>
+
+                        <div style="margin-bottom: 30px;">
+                            <h6><strong>Enter your transaction information below to accept admission</strong></h6>
+                        </div>
+
+                        <form id="accept-admission-form" action="#" method="post">
+                            <div class="row" style="margin-bottom: 30px;">
+                                <div class="col-lg-4 col-md-6 col-sm-12">
+                                    <label for="name-of-bank" class="form-label text-secondary"><strong>Name of Bank</strong></label>
+                                    <input type="text" class="form-control" id="name-of-bank" name="name-of-bank" placeholder="Name of Bank" value="<?= $uploaded_receipt ? $uploaded_receipt[0]['bank_name'] : '' ?>" required <?= $uploaded_receipt ? 'readonly' : '' ?>>
+                                </div>
+                                <div class="col-lg-4 col-md-6 col-sm-12">
+                                    <label for="branch-of-bank" class="form-label text-secondary"><strong>Branch of Bank</strong></label>
+                                    <input type="text" class="form-control" id="branch-of-bank" name="branch-of-bank" placeholder="Branch of Bank" value="<?= $uploaded_receipt ? $uploaded_receipt[0]['bank_branch'] : '' ?>" required <?= $uploaded_receipt ? 'readonly' : '' ?>>
+                                </div>
+                                <div class="col-lg-4 col-md-6 col-sm-12">
+                                    <label for="date-of-payment" class="form-label text-secondary"><strong>Date of Payment</strong></label>
+                                    <input type="date" class="form-control" id="date-of-payment" name="date-of-payment" placeholder="Date of Payment" value="<?= $uploaded_receipt ? $uploaded_receipt[0]['payment_date'] : '' ?>" required <?= $uploaded_receipt ? 'readonly' : '' ?>>
+                                </div>
+                            </div>
+                            <div style="margin-bottom: 30px;">
+                                <label for="transaction-identifier" class="form-label text-secondary"><strong>Transaction Identifier</strong></label>
+                                <input type="text" class="form-control" id="transaction-identifier" name="transaction-identifier" placeholder="Transaction Identifier" value="<?= $uploaded_receipt ? $uploaded_receipt[0]['transaction_identifier'] : '' ?>" required <?= $uploaded_receipt ? 'readonly' : '' ?>>
+                            </div>
+                            <div style="margin-bottom: 30px;">
+                                <label for="receipt-image" class="form-label text-secondary"><strong>Upload Receipt Image</strong></label>
+                                <?php
+                                if ($uploaded_receipt) {
+                                ?>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 mb-3">
+                                        <div class="border p-3 rounded">
+                                            <div class="d-flex align-items-center">
+                                                <div class="me-3">
+                                                    <div class="color: red">
+                                                        <img src="../assets/images/icons8-document-48.png" alt="Document Icon" width="30px" />
+                                                    </div>
+                                                </div>
+                                                <div style="width: 100%;">
+                                                    <h6 class="mb-1">Payment Receipt</h6>
+                                                    <div class="flex-row justify-content-between">
+                                                        <p><small class="text-muted"><i class="bi bi-clock"></i> Uploaded <?= date("F j, Y", strtotime($status['date'])) ?></small></p>
+                                                        <a href="https://admissions.rmuictonline.com/apply/docs/<?= $doc['file_name'] ?>" class="text-primary" download>View</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php
+                                } else {
+                                ?>
+                                    <p>
+                                        <small class="text-secondary">Please take a picture of your receipt and upload it.</small>
+                                    </p>
+                                    <input type="file" id="receipt-image" name="receipt-image" placeholder="Transaction Identifier" required>
+                                <?php
+                                }
+                                ?>
+                            </div>
+                            <input type="hidden" name="app-verified-id" value="<?= $user_id ?>">
+                            <input type="hidden" name="_csrfToken" value="<?= $_SESSION["_acceptFormValidToken"] ?>">
+                            <input type="submit" value="" id="acceptance-btn" style="display: none;">
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <?php
+                        if ($uploaded_receipt) {
+                        ?>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <?php
+                        } else {
+                        ?>
+                            <label for="acceptance-btn" class="btn btn-success">Accept Admission</label>
+                        <?php
+                        }
+                        ?>
                     </div>
                 </div>
             </div>
@@ -666,197 +904,437 @@ $page = array("id" => 0, "name" => "Application Status");
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <h5 class="border-bottom pb-2">Personal Information</h5>
-                        <div class="row mb-3">
-                            <div class="col-12">
-                                <table class="table table-borderless">
-                                    <tr>
-                                        <th>Prefix</th>
-                                        <td>MR.</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Full Name</th>
-                                        <td>ANDY KWAFO FENTENG SR.</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Gender</th>
-                                        <td>MALE</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Date of Birth</th>
-                                        <td>2001-06-09</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Marital Status</th>
-                                        <td>SINGLE</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Nationality</th>
-                                        <td>GHANA</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Phone Number 1</th>
-                                        <td>+233 0555351068</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Email</th>
-                                        <td>y.m.ratty7@gmail.com</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Postal Address</th>
-                                        <td>ABLEKUMA AWOSHIE, ACCRA, GREATER ACCRA, GHANA</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Parent/Guardian Name</th>
-                                        <td>OPHELIA ADJEI</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Parent/Guardian Phone</th>
-                                        <td>+233 0555351068</td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </div>
-
-                        <!-- Academic Background Information Section -->
-                        <h5 class="border-bottom pb-2">Academic Background Information</h5>
-                        <div class="row mb-3">
-                            <div class="col-12">
-                                <table class="table table-borderless">
-                                    <tr>
-                                        <th>School Name</th>
-                                        <td>Ideal College, Lapaz</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Country</th>
-                                        <td>Ghana</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Region</th>
-                                        <td>Greater Accra</td>
-                                    </tr>
-                                    <tr>
-                                        <th>City</th>
-                                        <td>Accra</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Certificate Type</th>
-                                        <td>WASSCE</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Start Date</th>
-                                        <td>Jan 2019</td>
-                                    </tr>
-                                    <tr>
-                                        <th>End Date</th>
-                                        <td>Jul 2019</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Course of Study</th>
-                                        <td>Business</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Index Number</th>
-                                        <td>0010184453</td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </div>
-
-                        <!-- Program Information Section -->
-                        <h5 class="border-bottom pb-2">Program Information</h5>
-                        <div class="row mb-3">
-                            <div class="col-12">
-                                <table class="table table-borderless">
-                                    <tr>
-                                        <th>First Program Choice</th>
-                                        <td>B.SC. ACCOUNTING</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Second Program Choice</th>
-                                        <td>B.SC. COMPUTER ENGINEERING</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Application Term</th>
-                                        <td>AUGUST</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Study Stream</th>
-                                        <td>REGULAR</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Last Updated</th>
-                                        <td>2023-06-20 12:50:08</td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </div>
-
-                        <!-- Uploaded Documents Section -->
-                        <h5 class="border-bottom pb-2">Uploaded Documents</h5>
                         <div class="row">
-                            <!-- Certificate -->
-                            <div class="col-lg-6 col-md-6 mb-3">
-                                <div class="border p-3 rounded">
-                                    <div class="d-flex align-items-center">
-                                        <div class="me-3">
-                                            <!-- Document Icon -->
-                                            <img src="https://img.icons8.com/clouds/50/000000/pdf.png" alt="Document Icon" />
-                                        </div>
-                                        <div>
-                                            <h6 class="mb-1">Certified True Copy.pdf</h6>
-                                            <a href="#" class="text-primary">View</a>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="col">
+                                <h6 style="font-size: 16px !important">
+                                    Application Mode: <b><?= strtolower($academic_BG[0]["cert_type"]) == "other" ? $academic_BG[0]["other_cert_type"] : $academic_BG[0]["cert_type"] ?></b>
+                                </h6>
                             </div>
-                            <!-- Transcript -->
-                            <div class="col-lg-6 col-md-6 mb-3">
-                                <div class="border p-3 rounded">
-                                    <div class="d-flex align-items-center">
-                                        <div class="me-3">
-                                            <!-- Document Icon -->
-                                            <img src="https://img.icons8.com/clouds/50/000000/pdf.png" alt="Document Icon" />
-                                        </div>
-                                        <div>
-                                            <h6 class="mb-1">Transcript - UPSA.pdf</h6>
-                                            <a href="#" class="text-primary">View</a>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="col">
+                                <h6 style="float:right; font-size: 16px !important">Form Type: <b><?= $form_name[0]["name"] ?></b></h6>
                             </div>
-                            <!-- Statement of Purpose -->
-                            <div class="col-lg-6 col-md-6 mb-3">
-                                <div class="border p-3 rounded">
-                                    <div class="d-flex align-items-center">
-                                        <div class="me-3">
-                                            <!-- Document Icon -->
-                                            <img src="https://img.icons8.com/clouds/50/000000/pdf.png" alt="Document Icon" />
-                                        </div>
-                                        <div>
-                                            <h6 class="mb-1">Statement of Purpose (Rebecca A. Adjei).pdf</h6>
-                                            <a href="#" class="text-primary">View</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Curriculum Vitae -->
-                            <div class="col-lg-6 col-md-6 mb-3">
-                                <div class="border p-3 rounded">
-                                    <div class="d-flex align-items-center">
-                                        <div class="me-3">
-                                            <!-- Document Icon -->
-                                            <img src="https://img.icons8.com/clouds/50/000000/pdf.png" alt="Document Icon" />
-                                        </div>
-                                        <div>
-                                            <h6 class="mb-1">Curriculum Vitae (Rebecca A. Adjei).pdf</h6>
-                                            <a href="#" class="text-primary">View</a>
-                                        </div>
-                                    </div>
-                                </div>
+                            <p>Note that your application would be considered under the above mode</p>
+                        </div>
+
+                        <hr>
+
+                        <div class="row">
+                            <div class="col">
+                                <h6 style="float:right; font-size: 16px !important">Application No.: <b><?= $app_number[0]["app_number"] ?></b></h6>
                             </div>
                         </div>
 
+                        <hr style="border: 1px dashed #000; padding-top: 0 !important; margin-top: 0 !important;">
+
+                        <div class="mb-4">
+                            <h6><b>Personal</b></h6>
+                            <fieldset style="width: 100%; border: 2px dashed #aaa; padding: 10px 10px">
+                                <div class="row">
+                                    <div class="col">
+                                        <p style="width: 100%; border-bottom: 1px solid #aaa; padding: 5px 0px"><b>Personal Information</b></p>
+                                        <div class="row">
+                                            <div class="col-7">
+                                                <table style=" width: 100%;" class="table table-borderless">
+                                                    <tr>
+                                                        <td style="text-align: right">Title: </td>
+                                                        <td><b><?= $personal[0]["prefix"] ?></b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="text-align: right">Name: </td>
+                                                        <td><b><?= $personal[0]["first_name"] ?> <?= $personal[0]["middle_name"] ?> <?= $personal[0]["last_name"] ?></b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="text-align: right">Sex: </td>
+                                                        <td><b><?= $personal[0]["gender"] ?></b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="text-align: right">Date of Birth: </td>
+                                                        <td><b><?= $personal[0]["dob"] ?></b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="text-align: right">Marital Status: </td>
+                                                        <td><b><?= $personal[0]["marital_status"] ?></b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="text-align: right">National of: </td>
+                                                        <td><b><?= $personal[0]["nationality"] ?></b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="text-align: right">Country of residence: </td>
+                                                        <td><b><?= $personal[0]["country_res"] ?></b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="text-align: right">Disabled?: </td>
+                                                        <td><b><?= $personal[0]["disability"] ? "YES" : "NO" ?> <?= $personal[0]["disability"] ? " - " . $personal[0]["disability_descript"] : "" ?></b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="text-align: right">English Native?: </td>
+                                                        <td><b><?= $personal[0]["english_native"] ? "YES" : "NO" ?> <?= !$personal[0]["english_native"]  ? " - " . $personal[0]["other_language"] : "" ?></b></td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                            <div class="col-5">
+                                                <div class="photo-display">
+                                                    <img id="app-photo" src="<?= 'https://admissions.rmuictonline.com/apply/photos/' . $personal[0]["photo"] ?>" alt="">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mt-2">
+                                    <div class="col">
+                                        <p style="width: 100%; border-bottom: 1px solid #aaa; padding: 5px 0px"><b>Contact Information</b></p>
+                                        <div class="row">
+                                            <div class="col">
+                                                <table class="table table-borderless">
+                                                    <tr>
+                                                        <td style="text-align: right">Postal Address: </td>
+                                                        <td><b><?= $personal[0]["postal_addr"] ?></b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="text-align: right">Postal Town: </td>
+                                                        <td><b><?= $personal[0]["postal_town"] ?></b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="text-align: right">Postal Region/Province: </td>
+                                                        <td><b><?= $personal[0]["postal_spr"] ?></b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="text-align: right">Postal Country: </td>
+                                                        <td><b><?= $personal[0]["postal_country"] ?></b></td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                            <div class="col">
+                                                <table class="table table-borderless">
+                                                    <tr>
+                                                        <td style="text-align: right">Primary phone number: </td>
+                                                        <td><b><?= $personal[0]["phone_no1_code"] ?> <?= $personal[0]["phone_no1"] ?></b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="text-align: right">Secondary phone number: </td>
+                                                        <td><b><?= $personal[0]["phone_no2_code"] ?> <?= $personal[0]["phone_no2"] ?></b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="text-align: right">Email address: </td>
+                                                        <td><b><?= $personal[0]["email_addr"] ?></b></td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+
+                        <div class="mb-4">
+                            <h6><b>Parental</b></h6>
+                            <fieldset style="width: 100%; border: 2px dashed #aaa; padding: 10px 10px">
+                                <div class="row">
+                                    <div class="col">
+                                        <p style="width: 100%; border-bottom: 1px solid #aaa; padding: 5px 0px"><b>Guardian / Parent Information</b></p>
+                                        <div class="row">
+                                            <div class="col">
+                                                <table class="table table-borderless">
+                                                    <tr>
+                                                        <td style="text-align: right">Name: </td>
+                                                        <td><b><?= $personal[0]["p_first_name"] ?> <?= $personal[0]["p_last_name"] ?></b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="text-align: right">Occupation: </td>
+                                                        <td><b><?= $personal[0]["p_occupation"] ?></b></td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                            <div class="col">
+                                                <table class="table table-borderless">
+                                                    <tr>
+                                                        <td style="text-align: right">Phone number: </td>
+                                                        <td><b><?= $personal[0]["p_phone_no_code"] ?> <?= $personal[0]["p_phone_no"] ?></b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="text-align: right">Email address: </td>
+                                                        <td><b><?= $personal[0]["p_email_addr"] ?></b></td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+
+                        <!-- Education Background -->
+                        <div class="mb-4">
+                            <h6><b>Education Background</b></h6>
+                            <fieldset style="width: 100%; border: 2px dashed #aaa; padding: 10px 10px">
+                                <div class="row">
+                                    <div class="col">
+
+                                        <p style="width: 100%; border-bottom: 1px solid #aaa; padding: 5px 0px"><b>List of schools you have attended</b></p>
+
+                                        <div class="row">
+                                            <div class="col">
+                                                <?php
+                                                if (!empty($academic_BG)) {
+                                                    foreach ($academic_BG as $edu_hist) {
+                                                ?>
+                                                        <div class="mb-4 edu-history" id="<?= $edu_hist["s_number"] ?>">
+                                                            <div class="edu-history-header">
+                                                                <div class="edu-history-header-info">
+                                                                    <p style="font-size: 14px; font-weight: 600;margin:0;padding:0">
+                                                                        <?= htmlspecialchars_decode(html_entity_decode(ucwords(strtolower($edu_hist["school_name"])), ENT_QUOTES), ENT_QUOTES); ?>
+                                                                        (<?= strtolower($edu_hist["course_of_study"]) == "other" ? htmlspecialchars_decode(html_entity_decode(ucwords(strtolower($edu_hist["other_course_studied"])), ENT_QUOTES), ENT_QUOTES) : htmlspecialchars_decode(html_entity_decode(ucwords(strtolower($edu_hist["course_of_study"])))) ?>)
+                                                                    </p>
+                                                                    <p style="color:#000;margin:0;padding:0; margin-top:8px">
+                                                                        <?= ucwords(strtolower($edu_hist["month_started"])) . " " . ucwords(strtolower($edu_hist["year_started"])) . " - " ?>
+                                                                        <?= ucwords(strtolower($edu_hist["month_completed"])) . " " . ucwords(strtolower($edu_hist["year_completed"])) ?>
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="edu-history-footer">
+                                                                <table class="col">
+                                                                    <tr>
+                                                                        <td style="text-align: right">Country: </td>
+                                                                        <td><b><?= $edu_hist["country"] ?></b></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td style="text-align: right">Region: </td>
+                                                                        <td><b><?= $edu_hist["region"] ?></b></td>
+                                                                    </tr>
+                                                                </table>
+                                                                <table class="col">
+                                                                    <tr>
+                                                                        <td style="text-align: right">Certificate Type: </td>
+                                                                        <td><b><?= strtolower($edu_hist["cert_type"]) == "other" ? $edu_hist["other_cert_type"] : $edu_hist["cert_type"] ?></b></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td style="text-align: right">Awaiting Status: </td>
+                                                                        <td><b><?= $edu_hist["awaiting_result"] ? "YES" : "NO" ?></b></td>
+                                                                    </tr>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                <?php
+                                                    }
+                                                }
+                                                ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+
+                        <!-- Uploaded Documents -->
+                        <div class="mb-4">
+                            <h6><b>Documents Uploaded</b></h6>
+                            <fieldset style="width: 100%; border: 2px dashed #aaa; padding: 10px 10px">
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="row">
+                                            <?php
+                                            foreach ($uploads as $doc) {
+                                                if (strtolower($doc['type']) === 'certificate') {
+                                            ?>
+                                                    <div class="col-lg-6 col-md-6 mb-3">
+                                                        <div class="border p-3 rounded">
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="me-3">
+                                                                    <div class="color: red">
+                                                                        <img src="../assets/images/icons8-document-48.png" alt="Document Icon" width="30px" />
+                                                                    </div>
+                                                                </div>
+                                                                <div style="width: 100%;">
+                                                                    <h6 class="mb-1">Document: Certificate</h6>
+                                                                    <div class="flex-row justify-content-between">
+                                                                        <p><small class="text-muted"><i class="bi bi-clock"></i> Uploaded <?= date("F j, Y", strtotime($status['date'])) ?></small></p>
+                                                                        <a href="https://admissions.rmuictonline.com/apply/docs/<?= $doc['file_name'] ?>" class="text-primary" download>View</a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                <?php
+                                                }
+                                                if (strtolower($doc['type']) === 'transcript') { ?>
+                                                    <div class="col-lg-6 col-md-6 mb-3">
+                                                        <div class="border p-3 rounded">
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="me-3">
+                                                                    <img src="../assets/images/icons8-document-48.png" alt="Document Icon" />
+                                                                </div>
+                                                                <div>
+                                                                    <h6 class="mb-1">Document: Transcript</h6>
+                                                                    <div class="flex-row justify-content-between">
+                                                                        <p><small class="text-muted"><i class="bi bi-clock"></i> Uploaded <?= date("F j, Y", strtotime($status['date'])) ?></small></p>
+                                                                        <a href="https://admissions.rmuictonline.com/apply/docs/<?= $doc['file_name'] ?>" class="text-primary" download>View</a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                <?php
+                                                }
+                                                if (strtolower($doc['type']) === 'cv') { ?>
+                                                    <div class="col-lg-6 col-md-6 mb-3">
+                                                        <div class="border p-3 rounded">
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="me-3">
+                                                                    <img src="../assets/images/icons8-document-48.png" alt="Document Icon" />
+                                                                </div>
+                                                                <div>
+                                                                    <h6 class="mb-1">Document: CV</h6>
+                                                                    <div class="flex-row justify-content-between">
+                                                                        <p><small class="text-muted"><i class="bi bi-clock"></i> Uploaded <?= date("F j, Y", strtotime($status['date'])) ?></small></p>
+                                                                        <a href="https://admissions.rmuictonline.com/apply/docs/<?= $doc['file_name'] ?>" class="text-primary" download>View</a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                <?php
+                                                }
+                                                if (strtolower($doc['type']) === 'recommendation') { ?>
+                                                    <div class="col-lg-6 col-md-6 mb-3">
+                                                        <div class="border p-3 rounded">
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="me-3">
+                                                                    <img src="../assets/images/icons8-document-48.png" alt="Document Icon" />
+                                                                </div>
+                                                                <div>
+                                                                    <h6 class="mb-1">Document: recommendation</h6>
+                                                                    <div class="flex-row justify-content-between">
+                                                                        <p><small class="text-muted"><i class="bi bi-clock"></i> Uploaded <?= date("F j, Y", strtotime($status['date'])) ?></small></p>
+                                                                        <a href="https://admissions.rmuictonline.com/apply/docs/<?= $doc['file_name'] ?>" class="text-primary" download>View</a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                <?php
+                                                }
+                                                if (strtolower($doc['type']) === 'nid') { ?>
+                                                    <div class="col-lg-6 col-md-6 mb-3">
+                                                        <div class="border p-3 rounded">
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="me-3">
+                                                                    <img src="../assets/images/icons8-picture-48.png" alt="Document Icon" />
+                                                                </div>
+                                                                <div>
+                                                                    <h6 class="mb-1">Document: NID</h6>
+                                                                    <div class="flex-row justify-content-between">
+                                                                        <p><small class="text-muted"><i class="bi bi-clock"></i> Uploaded <?= date("F j, Y", strtotime($status['date'])) ?></small></p>
+                                                                        <a href="https://admissions.rmuictonline.com/apply/docs/<?= $doc['file_name'] ?>" class="text-primary" download>View</a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                <?php
+                                                }
+                                                if (strtolower($doc['type']) === 'other') { ?>
+                                                    <div class="col-lg-6 col-md-6 mb-3">
+                                                        <div class="border p-3 rounded">
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="me-3">
+                                                                    <img src="../assets/images/icons8-picture-48.png" alt="Document Icon" />
+                                                                </div>
+                                                                <div>
+                                                                    <h6 class="mb-1">Other - </h6>
+                                                                    <h6 class="mb-1">Document: Certificate</h6>
+                                                                    <div class="flex-row justify-content-between">
+                                                                        <p><small class="text-muted"><i class="bi bi-clock"></i> Uploaded <?= date("F j, Y", strtotime($status['date'])) ?></small></p>
+                                                                        <a href="https://admissions.rmuictonline.com/apply/docs/<?= $doc['file_name'] ?>" class="text-primary" download>View</a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            <?php
+                                                }
+                                            }
+                                            ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+
+                        <!-- Programmes -->
+                        <div class="mb-4">
+                            <h6><b>University Enrollment Information</b></h6>
+                            <fieldset style="width: 100%; border: 2px dashed #aaa; padding: 10px 10px">
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="mb-4" style="font-weight: 600;">
+                                            <p>Term Applied for: <span><b><?= $personal_AB[0]["application_term"] ?></b></span></p>
+                                            <p>Stream Applied for: <span><b><?= $personal_AB[0]["study_stream"] ?></b></span></p>
+                                        </div>
+                                        <div class="row">
+                                            <?php
+                                            if (!empty($personal_AB)) {
+                                            ?>
+                                                <div class="col-7">
+
+                                                    <p style="width: 100%; border-bottom: 1px solid #aaa; padding: 5px 0px"><b>Programmes you have chosen to pursue</b></p>
+                                                    <div class="certificates mb-4">
+                                                        <table class="table table-borderless">
+                                                            <tr>
+                                                                <td style="text-align: right">First (1<sup>st</sup>) Choice: </td>
+                                                                <td><b><?= ucwords(strtoupper($personal_AB[0]["first_prog"])) ?></b></td>
+                                                            </tr>
+                                                            <tr style='<?= isset($personal_AB[0]["second_prog"]) && !empty($personal_AB[0]["second_prog"]) ? "none" : "block" ?>'>
+                                                                <td style="text-align: right">Second (2<sup>nd</sup>) Choice: </td>
+                                                                <td><b><?= ucwords(strtoupper($personal_AB[0]["second_prog"])) ?></b></td>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-5">
+                                                    <p style="width: 100%; border-bottom: 1px solid #aaa; padding: 5px 0px"><b>Choices for hall of residence</b></p>
+                                                    <table class="table table-borderless">
+                                                        <tr>
+                                                            <td style="text-align: right">First (1<sup>st</sup>) Choice: </td>
+                                                            <td><b><?= !empty($user->fetchAllFromProgramByName($personal_AB[0]["first_prog"])[0]["cadet_hall"]) ? "CADET HOSTEL" : "NON-CADET HOSTEL" ?></b></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="text-align: right">Second (2<sup>nd</sup>) Choice: </td>
+                                                            <td><b><?= !empty($user->fetchAllFromProgramByName($personal_AB[0]["second_prog"])[0]["cadet_hall"]) ? "CADET HOSTEL" : "NON-CADET HOSTEL" ?></b></td>
+                                                        </tr>
+                                                    </table>
+                                                </div>
+                                            <?php
+                                            }
+                                            ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+
+                        <div class="mb-4">
+                            <fieldset style="width: 100%; border: 1px dashed #000;">
+                                <div class="row">
+                                    <div class="col">
+                                        <div style="width: 100%; padding: 20px;">
+                                            <div style="width: 100%; background-color: #036; color: #fff; font-size: smaller; padding: 5px 10px; font-weight:700">
+                                                <b>DECLARATION</b>
+                                            </div>
+                                            <div style="align-items:center; margin-top: 10px">
+                                                <p>I
+                                                    <label for="">
+                                                        <b><?= $personal[0]["first_name"] ?> <?= $personal[0]["middle_name"] ?> <?= $personal[0]["last_name"] ?> </b>
+                                                    </label>, certify that the information provided above is valid and will be held personally responsible for its authenticity and will bear any consequences for any invalid information provided.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <a href="./download-copy.php?q=<?= isset($_SESSION['ghApplicant']) ? $_SESSION['ghApplicant'] : "" ?>" id="adm-letter-download-link" class="btn btn-primary btn-sm">Download</a>
@@ -894,6 +1372,14 @@ $page = array("id" => 0, "name" => "Application Status");
                 sidebar.classList.remove('open');
                 modalOverlay.classList.remove('active');
             }
+
+            // Close sidebar when any item inside the sidebar is clicked
+            const sidebarItems = document.querySelectorAll('.sidebar ul li');
+            sidebarItems.forEach(function(item) {
+                item.addEventListener('click', function() {
+                    closeSidebar();
+                });
+            });
 
             // Open sidebar when click on menu/profile-img
             menuToggle.addEventListener('click', function() {
@@ -942,7 +1428,35 @@ $page = array("id" => 0, "name" => "Application Status");
                 $('#adm-letter-download-link').attr('href', '#');
             });
 
+            $('#accept-admission-form').on('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
 
+                $.ajax({
+                    type: "POST",
+                    url: "../api/accept-admission",
+                    data: formData,
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+                    success: function(result) {
+                        console.log(result);
+                        if (result.success) {
+                            alert(result.message);
+                            document.location.reload();
+                        } else {
+                            if (result.message == "logout") {
+                                alert('Your session expired. Please refresh the page to continue!');
+                                window.location.href = "?logout=true";
+                            } else alert(result.message);
+                        }
+                    },
+                    error: function(error) {
+                        console.log("error area: ", error);
+                        alert(error);
+                    }
+                });
+            });
         });
     </script>
 </body>

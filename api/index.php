@@ -6,11 +6,7 @@ $_SESSION["currentAccess"] = time();
 
 $diff = $_SESSION["currentAccess"] - $_SESSION["lastAccessed"];
 
-if ($diff >  1800) die(json_encode(array(
-    "success" => false,
-    "message" => "Your session expired. Please refresh the page to continue!",
-    "data" => "logout"
-)));
+if ($diff >  1800) die(json_encode(array("success" => false, "message" => "logout")));
 
 /*
 * Designed and programmed by
@@ -820,6 +816,72 @@ if ($_SERVER['REQUEST_METHOD'] == "GET") {
         if (!isset($_POST["value"]) || empty($_POST["value"])) die(json_encode(array("success" => false, "message" => "Invalid input!")));
         die(json_encode($user->fetchProgramesByProgramCode($_POST["value"])));
     }
+
+    // accept admission
+    else if ($_GET["url"] == "accept-admission") {
+        if (!isset($_POST["_csrfToken"]) || empty($_POST["_csrfToken"]) || $_POST["_csrfToken"] !== $_SESSION["_acceptFormValidToken"])
+            die(json_encode(array("success" => false, "message" => "Access denied for performing this process!")));
+
+        if (!isset($_POST["name-of-bank"]) || empty($_POST["name-of-bank"]))
+            die(json_encode(array("success" => false, "message" => "Name of bank is required!")));
+
+        if (!isset($_POST["branch-of-bank"]) || empty($_POST["branch-of-bank"]))
+            die(json_encode(array("success" => false, "message" => "Branch of bank is required!")));
+
+        if (!isset($_POST["date-of-payment"]) || empty($_POST["date-of-payment"]))
+            die(json_encode(array("success" => false, "message" => "Date of payment is required!")));
+
+        if (!isset($_POST["transaction-identifier"]) || empty($_POST["transaction-identifier"]))
+            die(json_encode(array("success" => false, "message" => "Transaction identifier is required!")));
+
+        if (!isset($_FILES["receipt-image"]["name"]) || empty($_FILES["receipt-image"]["name"]))
+            die(json_encode(array("success" => false, "message" => "A picture of the receipt is required!")));
+
+        try {
+            $allowedFileType = ["image/png", "image/jpg", "image/jpeg", "application/pdf"];
+            $check = filesize($_FILES["receipt-image"]["tmp_name"]);
+
+            if ($check !== false) {
+                if (in_array($_FILES["receipt-image"]["type"], $allowedFileType)) {
+                    // Use pathinfo to extract file name and extension
+                    $fileInfo = pathinfo($_FILES["receipt-image"]["name"]);
+
+                    // Get the extension and filename separately
+                    $extension = isset($fileInfo['extension']) ? $fileInfo['extension'] : '';
+                    $baseName = isset($fileInfo['filename']) ? $fileInfo['filename'] : 'default_name';
+
+                    // Generate new name with a unique timestamp
+                    $newFileName = 'acceptance_receipt_' . microtime(true) . '.' . $extension;
+                    if (move_uploaded_file($_FILES['receipt-image']['tmp_name'], "../apply/docs/" . $newFileName)) {
+                        if ($user->saveAcceptanceReceipts($_POST, $newFileName, $_SESSION['ghApplicant'])) {
+                            $data["success"] = true;
+                            $data["message"] = "File saved successfully!";
+                        } else {
+                            $data["success"] = false;
+                            $data["error"] = "Internal server error";
+                        }
+                    } else {
+                        $data["success"] = false;
+                        $data["error"] = "Server error";
+                    }
+                } else {
+                    $data["success"] = false;
+                    $data["error"] = "Invalid file type";
+                }
+            } else {
+                $data["success"] = false;
+                $data["error"] = "File is too large";
+            }
+        } catch (Exception $e) {
+            // Log the exception message in the after_post.log file
+            error_log("Error: " . $e->getMessage(), 3, '../Logs/after_post.log');
+        }
+
+        echo json_encode($data);
+        exit();
+    }
+
+    // PUT Requests
 } else if ($_SERVER['REQUEST_METHOD'] == "PUT") {
     parse_str(file_get_contents("php://input"), $_PUT);
 

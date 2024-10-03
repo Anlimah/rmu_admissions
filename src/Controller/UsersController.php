@@ -369,7 +369,7 @@ class UsersController
     public function verifyForm($column)
     {
         $str = "UPDATE `form_sections_chek` SET $column = 1 WHERE `id` = :i";
-        $this->dm->inputData($str);
+        return $this->dm->inputData($str);
     }
 
     private function doesCodeExists($code)
@@ -642,5 +642,28 @@ class UsersController
             "SELECT * FROM notifications WHERE `to` = :a AND `read` = 0",
             array(":a" => $appID)
         );
+    }
+
+    public function getAppUploadedAcceptanceReceipt($user_id)
+    {
+        return $this->dm->getData(
+            "SELECT * FROM acceptance_receipts WHERE `app_login` = :i",
+            array(":i" => $user_id)
+        );
+    }
+
+    public function saveAcceptanceReceipts(array $data, $file_name, $user_id)
+    {
+        $query = "INSERT INTO `acceptance_receipts` 
+        (`bank_name`, `bank_branch`, `payment_date`, `transaction_identifier`, `receipt_image`, `app_login`) 
+        VALUES (:bn, :bb, :pd, :ti, :ri, :al)";
+        return $this->dm->inputData($query, array(
+            ":bn" => $data["name-of-bank"],
+            ":bb" => $data["branch-of-bank"],
+            ":pd" => $data["date-of-payment"],
+            ":ti" => $data["transaction-identifier"],
+            ":ri" => $file_name,
+            ":al" => $user_id
+        ));
     }
 }
