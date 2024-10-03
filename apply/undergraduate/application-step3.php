@@ -20,6 +20,7 @@ if (isset($_GET['logout'])) {
 }
 
 $user_id = isset($_SESSION['ghApplicant']) && !empty($_SESSION["ghApplicant"]) ? $_SESSION["ghApplicant"] : "";
+$_SESSION["lastAccessed"] = time();
 
 $page = array("id" => 3, "name" => "Programmes Information");
 ?>

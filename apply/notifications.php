@@ -19,6 +19,7 @@ if (isset($_GET['logout'])) {
 $user_id = isset($_SESSION['ghApplicant']) && !empty($_SESSION["ghApplicant"]) ? $_SESSION["ghApplicant"] : "";
 
 require_once('../bootstrap.php');
+$_SESSION["lastAccessed"] = time();
 
 use Src\Controller\UsersController;
 

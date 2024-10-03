@@ -789,13 +789,21 @@ $page = array("id" => 0, "name" => "Application Status");
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <iframe id="admissionLetterIframe" width="100%" height="500px"></iframe>
+                        <?php if ($statuses && $statuses[0]["admitted"]) { ?>
+                            <iframe id="admissionLetterIframe" width="100%" height="500px"></iframe>
+                        <?php } else { ?>
+                            <p class="text-danger" style="font-size: medium;">Your admission process has not been completed.</p>
+                        <?php } ?>
                     </div>
                     <div class="modal-footer">
-                        <div class="download-footer">
-                            <a id="adm-letter-download-link" target="_blank" class="btn btn-primary btn-sm" download>Download Letter</a>
-                            <a id="adm-letter-download-link" target="_blank" class="btn btn-success btn-sm" download>Download Supplimentary Sheet</a>
-                        </div>
+                        <?php if ($statuses && $statuses[0]["admitted"]) { ?>
+                            <div class="download-footer">
+                                <a id="adm-letter-download-link" target="_blank" class="btn btn-primary btn-sm" download>Download Letter</a>
+                                <a id="adm-letter-download-link" target="_blank" class="btn btn-success btn-sm" download>Download Supplimentary Sheet</a>
+                            </div>
+                        <?php } else { ?>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <?php } ?>
                     </div>
                 </div>
             </div>
@@ -874,8 +882,9 @@ $page = array("id" => 0, "name" => "Application Status");
                                 }
                                 ?>
                             </div>
+
                             <input type="hidden" name="app-verified-id" value="<?= $user_id ?>">
-                            <input type="hidden" name="_csrfToken" value="<?= $_SESSION["_acceptFormValidToken"] ?>">
+                            <input type="hidden" name="_csrfToken" value="<?= isset($_SESSION["_acceptFormValidToken"]) ? $_SESSION["_acceptFormValidToken"] : '' ?>">
                             <input type="submit" value="" id="acceptance-btn" style="display: none;">
                         </form>
                     </div>
@@ -1412,20 +1421,24 @@ $page = array("id" => 0, "name" => "Application Status");
 
             // Dynamically load the PDF into the iframe and set the download link when the modal is shown
             $('#admission-letter-modal').on('show.bs.modal', function() {
-                // Set the iframe source to load the PDF
-                $('#admissionLetterIframe').attr('src', pdfUrl);
+                <?php if ($statuses && $statuses[0]["admitted"]) { ?>
+                    // Set the iframe source to load the PDF
+                    $('#admissionLetterIframe').attr('src', pdfUrl);
 
-                // Set the download link href to the PDF URL
-                $('#adm-letter-download-link').attr('href', pdfUrl);
+                    // Set the download link href to the PDF URL
+                    $('#adm-letter-download-link').attr('href', pdfUrl);
+                <?php } ?>
             });
 
             // Clear the iframe src and download link href when the modal is hidden (to release resources)
             $('#admission-letter-modal').on('hide.bs.modal', function() {
-                // Clear the iframe source
-                $('#admissionLetterIframe').attr('src', '');
+                <?php if ($statuses && $statuses[0]["admitted"]) { ?>
+                    // Clear the iframe source
+                    $('#admissionLetterIframe').attr('src', '');
 
-                // Unset the download link href
-                $('#adm-letter-download-link').attr('href', '#');
+                    // Unset the download link href
+                    $('#adm-letter-download-link').attr('href', '#');
+                <?php } ?>
             });
 
             $('#accept-admission-form').on('submit', function(e) {
