@@ -568,7 +568,7 @@ $page = array("id" => 0, "name" => "Application Status");
 
 <body>
 
-    <?php require_once("../inc/top-bar.php") ?>
+    <?php require_once("../inc/topbar.php") ?>
 
     <div class="alert alert-info" role="alert" style="display: none;"></div>
 
