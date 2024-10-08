@@ -575,7 +575,9 @@ $page = array("id" => 0, "name" => "Application Status");
                 RMU
             </a>
             <div class="d-flex align-items-center">
-                <i class="bi bi-bell notification-icon" style="cursor: pointer;"></i>
+                <a href="notifications.php">
+                    <i class="bi bi-bell notification-icon" style="cursor: pointer;"></i>
+                </a>
                 <a id="logout-btn" class="btn btn-outline-light ms-2" href="?logout=true">Sign Out</a>
                 <!-- <i class="bi bi-list menu-toggle ms-3 d-lg-none"></i> -->
                 <img id="profile-img" src="<?= $avatar ?>" alt="Profile Image" class="menu-toggle">
