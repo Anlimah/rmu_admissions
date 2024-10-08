@@ -568,43 +568,7 @@ $page = array("id" => 0, "name" => "Application Status");
 
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-light">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="#">
-                <img src="../assets/images/rmu-logo.png" alt="University Logo" class="me-2" width="30">
-                RMU
-            </a>
-            <div class="d-flex align-items-center">
-                <a href="notifications.php">
-                    <i class="bi bi-bell notification-icon" style="cursor: pointer;"></i>
-                </a>
-                <a id="logout-btn" class="btn btn-outline-light ms-2" href="?logout=true">Sign Out</a>
-                <!-- <i class="bi bi-list menu-toggle ms-3 d-lg-none"></i> -->
-                <img id="profile-img" src="<?= $avatar ?>" alt="Profile Image" class="menu-toggle">
-            </div>
-        </div>
-    </nav>
-
-    <div class="dashboard">
-        <div class="container">
-            <div class="dashboard-header">
-                <div>
-                    <img src="<?= $avatar ?>" alt="Profile Image">
-                    <span class="ms-3">Hello, <?= $personal[0]["first_name"] ?></span>
-                </div>
-                <div class="dashboard-buttons d-none d-lg-flex">
-                    <?php if ($statuses && $statuses[0]["admitted"]) { ?>
-                        <button class="btn btn-success me-3" data-bs-toggle="modal" data-bs-target="#accept-admission-modal">
-                            <i class="bi bi-check-circle"></i> Accept Admission
-                        </button>
-                    <?php } ?>
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#application-summary-modal">
-                        <i class="bi bi-check-circle"></i> Application Summary
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <?php require_once("../inc/top-bar.php") ?>
 
     <div class="alert alert-info" role="alert" style="display: none;"></div>
 
@@ -661,32 +625,7 @@ $page = array("id" => 0, "name" => "Application Status");
         </div>
 
         <!-- Sidebar for mobile view -->
-        <!-- Modal Background -->
-        <div class="modal-overlay" id="modalOverlay"></div>
-
-        <!-- Sidebar for mobile view -->
-        <div class="sidebar" id="sidebar">
-            <div class="profile-section d-flex align-items-center mb-4">
-                <img src="<?= $avatar ?>" alt="Profile Image" class="me-2" style="border-radius: 50%; width: 40px;">
-                <span>Hello, <?= $personal[0]["first_name"] ?></span>
-            </div>
-            <ul>
-                <li class="d-flex align-items-center mb-3" data-bs-toggle="modal" data-bs-target="#accept-admission-modal">
-                    <i class="bi bi-check-circle me-2"></i>
-                    Accept Admission
-                </li>
-                <li class="d-flex align-items-center mb-3" data-bs-toggle="modal" data-bs-target="#application-summary-modal">
-                    <i class="bi bi-file-earmark-text me-2"></i>
-                    <span>Application Summary</span>
-                </li>
-                <a href="?logout=true">
-                    <li class="d-flex align-items-center mb-3">
-                        <i class="bi bi-box-arrow-right me-2"></i>
-                        Sign Out
-                    </li>
-                </a>
-            </ul>
-        </div>
+        <?php require_once("../inc/sidebar.php") ?>
 
         <!-- Modals -->
         <div class="modal fade" id="voucher-details-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="voucher-details-modalLabel" aria-hidden="true">

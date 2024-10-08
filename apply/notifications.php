@@ -278,6 +278,28 @@ $page = array("id" => 0, "name" => "Application Status");
             margin-right: 8px;
         }
 
+        .fp-footer {
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-self: flex-end !important;
+            align-items: center !important;
+            text-align: center !important;
+            line-height: 1.2 !important;
+            height: 60px !important;
+            color: #003262 !important;
+            width: 100% !important;
+            /*background-color: #002549;*/
+        }
+
+        .fp-footer {
+            border-top: 1px solid #ccc;
+        }
+
+        .fp-footer {
+            width: 100% !important;
+        }
+
         @media (min-width: 768px) {
             #profile-img {
                 display: none;
@@ -463,43 +485,7 @@ $page = array("id" => 0, "name" => "Application Status");
 
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-light">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="#">
-                <img src="../assets/images/rmu-logo.png" alt="University Logo" class="me-2" width="30">
-                RMU
-            </a>
-            <div class="d-flex align-items-center">
-                <a href="notifications.php">
-                    <i class="bi bi-bell notification-icon" style="cursor: pointer;"></i>
-                </a>
-                <a id="logout-btn" class="btn btn-outline-light ms-2" href="?logout=true">Sign Out</a>
-                <!-- <i class="bi bi-list menu-toggle ms-3 d-lg-none"></i> -->
-                <img id="profile-img" src="<?= $avatar ?>" alt="Profile Image" class="menu-toggle">
-            </div>
-        </div>
-    </nav>
-
-    <div class="dashboard">
-        <div class="container">
-            <div class="dashboard-header">
-                <div>
-                    <img src="<?= $avatar ?>" alt="Profile Image">
-                    <span class="ms-3">Hello, <?= $personal[0]["first_name"] ?></span>
-                </div>
-                <div class="dashboard-buttons d-none d-lg-flex">
-                    <?php if ($statuses && $statuses[0]["admitted"]) { ?>
-                        <button class="btn btn-success me-3" data-bs-toggle="modal" data-bs-target="#accept-admission-modal">
-                            <i class="bi bi-check-circle"></i> Accept Admission
-                        </button>
-                    <?php } ?>
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#application-summary-modal">
-                        <i class="bi bi-check-circle"></i> Application Summary
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <?php require_once("../inc/top-bar.php") ?>
 
     <div class="container" style="margin-top:30px; --bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">
         <ol class="breadcrumb">
@@ -521,34 +507,9 @@ $page = array("id" => 0, "name" => "Application Status");
                 <!-- Notifications will be dynamically inserted here -->
             </ul>
         </div>
-
+ 
         <!-- Sidebar for mobile view -->
-        <!-- Modal Background -->
-        <div class="modal-overlay" id="modalOverlay"></div>
-
-        <!-- Sidebar for mobile view -->
-        <div class="sidebar" id="sidebar">
-            <div class="profile-section d-flex align-items-center mb-4">
-                <img src="<?= $avatar ?>" alt="Profile Image" class="me-2" style="border-radius: 50%; width: 40px;">
-                <span>Hello, <?= $personal[0]["first_name"] ?></span>
-            </div>
-            <ul>
-                <li class="d-flex align-items-center mb-3" data-bs-toggle="modal" data-bs-target="#accept-admission-modal">
-                    <i class="bi bi-check-circle me-2"></i>
-                    Accept Admission
-                </li>
-                <li class="d-flex align-items-center mb-3" data-bs-toggle="modal" data-bs-target="#application-summary-modal">
-                    <i class="bi bi-file-earmark-text me-2"></i>
-                    <span>Application Summary</span>
-                </li>
-                <a href="?logout=true">
-                    <li class="d-flex align-items-center mb-3">
-                        <i class="bi bi-box-arrow-right me-2"></i>
-                        Sign Out
-                    </li>
-                </a>
-            </ul>
-        </div>
+        <?php require_once("../inc/sidebar.php") ?>
 
         <!-- Modals -->
         <div class="modal fade" id="accept-admission-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="accept-admission-modalLabel" aria-hidden="true">
@@ -1095,10 +1056,7 @@ $page = array("id" => 0, "name" => "Application Status");
         </div>
     </div>
 
-    <!-- Footer Section -->
-    <footer class="footer">
-        <p>&copy; 2024 University. All rights reserved.</p>
-    </footer>
+    <?php require_once("../inc/page-footer.php"); ?>
 
     <script src="../js/jquery-3.6.0.min.js"></script>
     <!-- Bootstrap JS -->
@@ -1235,9 +1193,9 @@ $page = array("id" => 0, "name" => "Application Status");
                     li.className = `notification-item ${notification.read ? '' : 'unread'}`;
                     li.innerHTML = `
                         <div class="notification-content">
-                            <div class="user-avatar"></div>
+                            <div class="notification-user-avatar"></div>
                             <div class="notification-text">
-                                <span class="user-name">${notification.user}</span>
+                                <span class="notification-user-name">${notification.user}</span>
                                 <span class="notification-action">${notification.action}</span>
                                 ${notification.content ? `<strong>${notification.content}</strong>` : ''}
                                 <div class="notification-time">${notification.time}</div>
