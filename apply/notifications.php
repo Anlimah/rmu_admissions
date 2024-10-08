@@ -450,8 +450,8 @@ $page = array("id" => 0, "name" => "Application Status");
         }
 
         .notification-user-avatar {
-            width: 40px;
-            height: 40px;
+            width: 35px;
+            height: 35px;
             border-radius: 50%;
             background-color: #ddd;
             margin-right: 15px;
@@ -1193,7 +1193,9 @@ $page = array("id" => 0, "name" => "Application Status");
                     li.className = `notification-item ${notification.read ? '' : 'unread'}`;
                     li.innerHTML = `
                         <div class="notification-content">
-                            <div class="notification-user-avatar"></div>
+                            <div class="notification-user-avatar">
+                                <img src="../assets/images/rmu-logo.png" alt="" width="35px" />
+                            </div>
                             <div class="notification-text">
                                 <span class="notification-user-name">${notification.user}</span>
                                 <span class="notification-action">${notification.action}</span>
