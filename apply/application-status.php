@@ -41,6 +41,13 @@ $statusesInfo = [
         'class' => $statuses[0]["reviewed"] ? 'success' : 'secondary',
     ],
     [
+        'title' => 'Shortlisted',
+        'description' => 'Congratulations! You have been shortlisted.',
+        'icon' => 'bi bi-check2',
+        'date' => '2024-01-17',
+        'class' => $statuses[0]["shortlisted"] ? 'success' : 'secondary',
+    ],
+    [
         'title' => 'Admitted',
         'description' => 'Congratulations! You have been admitted to the program.',
         'icon' => 'bi bi-check2',

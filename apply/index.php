@@ -167,6 +167,7 @@ if (!isset($_SESSION["_start"])) {
 
             </div>
         </main>
+
         <?php require_once("../inc/page-footer.php"); ?>
 
     </div>
@@ -176,7 +177,7 @@ if (!isset($_SESSION["_start"])) {
     <script>
         $(document).ready(function() {
 
-            if (window.location.href == "https://admissions.rmuictonline.com/apply/index.php" || window.location.href == "https://admissions.rmuictonline.com/apply/") {
+            if (window.location.href == "http://localhost/rmu_admissions/apply/index.php" || window.location.href == "http://localhost/rmu_admissions/apply/" || window.location.href == "https://admissions.rmuictonline.com/apply/index.php" || window.location.href == "https://admissions.rmuictonline.com/apply/") {
                 $("#signout-div").hide();
             }
 
@@ -208,10 +209,12 @@ if (!isset($_SESSION["_start"])) {
                     return;
                 }
 
+                var formData = new FormData(this);
+
                 $.ajax({
                     type: "POST",
                     url: "../api/appLogin",
-                    data: new FormData(this),
+                    data: formData,
                     contentType: false,
                     cache: false,
                     processData: false,
@@ -224,7 +227,9 @@ if (!isset($_SESSION["_start"])) {
                             alert(result['message']);
                         }
                     },
-                    error: function(error) {}
+                    error: function(error) {
+                        console.log(error);
+                    }
                 });
 
                 e.preventDefault();

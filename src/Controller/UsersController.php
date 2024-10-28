@@ -451,7 +451,7 @@ class UsersController
         return 0;
     }
 
-    public function saveSubjectAndGrades($subjects = array(), $aca_id)
+    public function saveSubjectAndGrades($aca_id, $subjects = array())
     {
         if (!empty($subjects)) {
             $sql = "INSERT INTO `high_school_results` (`type`, `subject`, `grade`, `acad_back_id`) VALUES (:t, :s, :g, :ai)";
@@ -515,7 +515,7 @@ class UsersController
         return $this->dm->inputData($query, array(":a" => $aca_id));
     }
 
-    public function addSubjectAndGrades($subjects = array(), $aca_id)
+    public function addSubjectAndGrades($aca_id, $subjects = array())
     {
         $count = 0;
         $query = "INSERT INTO `high_school_results`(`type`, `subject`, `grade`, `acad_back_id`) VALUES(:t,:s,:g,:a)";

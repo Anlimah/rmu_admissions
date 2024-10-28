@@ -3,10 +3,8 @@ session_start();
 
 if (!isset($_SESSION["lastAccessed"])) $_SESSION["lastAccessed"] = time();
 $_SESSION["currentAccess"] = time();
-
 $diff = $_SESSION["currentAccess"] - $_SESSION["lastAccessed"];
-
-if ($diff >  1800) die(json_encode(array("success" => false, "message" => "logout")));
+if ($diff > 1800) die(json_encode(array("success" => false, "message" => "logout")));
 
 /*
 * Designed and programmed by
@@ -378,7 +376,7 @@ if ($_SERVER['REQUEST_METHOD'] == "GET") {
                         )
                     );
 
-                    if ($user->saveSubjectAndGrades($subjects, $result)) {
+                    if ($user->saveSubjectAndGrades($result, $subjects)) {
                         $data['success'] = true;
                         $data['message'] = 'Data saved successfully!';
                     }
@@ -616,7 +614,7 @@ if ($_SERVER['REQUEST_METHOD'] == "GET") {
                     array("subject" => $elective_sbj4["message"], "grade" => $elective_sbj_grd4["message"])
                 )
             );
-            $user->addSubjectAndGrades($subjects, $acaID);
+            $user->addSubjectAndGrades($acaID, $subjects);
         }
 
         die(json_encode(array('success' => true, "message" => "Data saved successfully!")));/**/
