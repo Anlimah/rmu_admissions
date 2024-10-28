@@ -35,10 +35,10 @@ if (!isset($_SESSION["_start"])) {
                             <div class="col-1 text-center">1</div>
                             <p class="col-11">
                                 <span style="color:#003262; font-weight:bolder">International applicants</span> should click on this
-                                <a href="https://forms.rmuictonline.com">
+                                <a href="https://foreign.rmuictonline.com">
                                     <span style="color: red; font-weight:bolder"> Link </span>
                                 </a> (
-                                <a href="https://forms.rmuictonline.com">
+                                <a href="https://foreign.rmuictonline.com">
                                     <span style="color: red; font-weight:bolder"> https://forms.rmuictonline.com </span>
                                 </a>) to purchase an e-voucher using <span style="color:#003262; font-weight:bolder">ONLY</span> Card (Visa & Master).
                             </p>
