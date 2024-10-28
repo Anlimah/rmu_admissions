@@ -630,3 +630,9 @@ FROM
 SELECT , `acad_back_id` FROM 
 
 SELECT , `app_login` FROM 
+
+
+// adding
+
+ALTER TABLE acceptance_receipts ADD COLUMN `status` TINYINT(1) DEFAULT 0 AFTER `app_login`;
+ALTER TABLE form_sections_chek ADD COLUMN `stream_admitted` VARCHAR(30) DEFAULT NULL AFTER `level_admitted`;
