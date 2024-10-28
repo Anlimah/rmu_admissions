@@ -24,7 +24,31 @@ require_once('../bootstrap.php');
 use Src\Controller\UsersController;
 
 $user = new UsersController();
+
+$photo = $user->fetchApplicantPhoto($user_id);
+$personal = $user->fetchApplicantPersI($user_id);
+$appStatus = $user->getApplicationStatus($user_id);
+$pre_uni_rec = $user->fetchApplicantPreUni($user_id);
+$academic_BG = $user->fetchApplicantAcaB($user_id);
+$app_type = $user->getApplicationType($user_id);
+$personal_AB = $user->fetchApplicantProgI($user_id);
+$about_us = $user->fetchHowYouKnowUs($user_id);
+$uploads = $user->fetchUploadedDocs($user_id);
+$form_name = $user->getFormTypeName($app_type[0]["form_id"]);
+$app_number = $user->getApplicantAppNum($user_id);
+$uploaded_receipt = $user->getAppUploadedAcceptanceReceipt($user_id);
+$purchaseInfo = $user->fetchAppPurchaseDetails($user_id);
+
+$avatar = (isset($photo) && !empty($photo[0]["photo"])) ? 'photos/' . $photo[0]["photo"] : '../assets/images/default-avatar.jpg';
+
 $statuses = !empty($user_id) ? $user->fetchApplicationStatus($user_id) : [];
+$programInfo = [];
+if (!empty($statuses)) {
+    if ($statuses[0]["shortlisted"] || $statuses[0]["admitted"] || $statuses[0]["enrolled"]) {
+        $programInfo = $user->getProgramById($statuses[0]["programme_awarded"]);
+    }
+}
+
 $statusesInfo = [
     [
         'title' => 'Application Submitted',
@@ -42,7 +66,7 @@ $statusesInfo = [
     ],
     [
         'title' => 'Shortlisted',
-        'description' => 'Congratulations! You have been shortlisted.',
+        'description' => (!empty($programInfo)) ? 'Your application has been shortlisted for ' . $programInfo[0]['name'] : 'Your application has been shortlisted for a program.',
         'icon' => 'bi bi-check2',
         'date' => '2024-01-17',
         'class' => $statuses[0]["shortlisted"] ? 'success' : 'secondary',
@@ -62,23 +86,6 @@ $statusesInfo = [
         'class' => $statuses[0]["enrolled"] ? 'success' : 'secondary',
     ]
 ];
-
-$photo = $user->fetchApplicantPhoto($user_id);
-$personal = $user->fetchApplicantPersI($user_id);
-$appStatus = $user->getApplicationStatus($user_id);
-$pre_uni_rec = $user->fetchApplicantPreUni($user_id);
-$academic_BG = $user->fetchApplicantAcaB($user_id);
-$app_type = $user->getApplicationType($user_id);
-$personal_AB = $user->fetchApplicantProgI($user_id);
-$about_us = $user->fetchHowYouKnowUs($user_id);
-$uploads = $user->fetchUploadedDocs($user_id);
-$form_name = $user->getFormTypeName($app_type[0]["form_id"]);
-$app_number = $user->getApplicantAppNum($user_id);
-$uploaded_receipt = $user->getAppUploadedAcceptanceReceipt($user_id);
-$purchaseInfo = $user->fetchAppPurchaseDetails($user_id);
-
-$avatar = (isset($photo) && !empty($photo[0]["photo"])) ? 'photos/' . $photo[0]["photo"] : '../assets/images/default-avatar.jpg';
-
 
 if (!$uploaded_receipt) {
     if (!isset($_SESSION["_acceptFormValidToken"])) {

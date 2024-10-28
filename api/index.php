@@ -850,7 +850,11 @@ if ($_SERVER['REQUEST_METHOD'] == "GET") {
 
                     // Generate new name with a unique timestamp
                     $newFileName = 'acceptance_receipt_' . microtime(true) . '.' . $extension;
-                    if (move_uploaded_file($_FILES['receipt-image']['tmp_name'], "../apply/docs/" . $newFileName)) {
+
+                    $dir_path = "../apply/acceptance_receipts/";
+                    if (!is_dir($dir_path)) mkdir($dir_path, 0777, true);
+
+                    if (move_uploaded_file($_FILES['receipt-image']['tmp_name'], $dir_path . $newFileName)) {
                         if ($user->saveAcceptanceReceipts($_POST, $newFileName, $_SESSION['ghApplicant'])) {
                             $data["success"] = true;
                             $data["message"] = "File saved successfully!";

@@ -164,6 +164,12 @@ class UsersController
      * 
      */
 
+    public function getProgramById($program_id)
+    {
+        $sql = "SELECT * FROM `programs` WHERE `id` = :p";
+        return $this->dm->getData($sql, array(':p' => $program_id));
+    }
+
     public function verifyLoginDetails($app_number, $pin)
     {
         $sql = "SELECT al.`pin`, al.`id`, al.`purchase_id`, fc.`declaration`, pd.`form_id` 
