@@ -39,7 +39,7 @@ if (!isset($_SESSION["_start"])) {
                                     <span style="color: red; font-weight:bolder"> Link </span>
                                 </a> (
                                 <a href="https://foreign.rmuictonline.com">
-                                    <span style="color: red; font-weight:bolder"> https://forms.rmuictonline.com </span>
+                                    <span style="color: red; font-weight:bolder"> https://foreign.rmuictonline.com </span>
                                 </a>) to purchase an e-voucher using <span style="color:#003262; font-weight:bolder">ONLY</span> Card (Visa & Master).
                             </p>
                         </div>
